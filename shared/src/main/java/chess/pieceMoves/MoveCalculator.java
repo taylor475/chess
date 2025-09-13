@@ -23,10 +23,10 @@ public interface MoveCalculator {
         int currentX = currentPosition.getColumn();
         int currentY = currentPosition.getRow();
 
-        ChessGame.TeamColor team = board.getPiece(currentPosition).getTeamColor();
+        ChessGame.TeamColor team = board.getPositionTeam(currentPosition);
         for (int[] relativeMove : relativeMoves) {
             ChessPosition possiblePosition = new ChessPosition(currentY + relativeMove[1], currentX + relativeMove[0]);
-            if (isValidSquare(possiblePosition) && board.getPiece(possiblePosition).getTeamColor() != team) {
+            if (isValidSquare(possiblePosition) && board.getPositionTeam(possiblePosition) != team) {
                 moves.add(new ChessMove(currentPosition, possiblePosition, null));
             }
         }
@@ -40,7 +40,7 @@ public interface MoveCalculator {
         int currentX = currentPosition.getColumn();
         int currentY = currentPosition.getRow();
 
-        ChessGame.TeamColor team = board.getPiece(currentPosition).getTeamColor();
+        ChessGame.TeamColor team = board.getPositionTeam(currentPosition);
         for (int[] direction : moveDirections) {
             boolean obstructed = false;
             int i = 1;
@@ -50,10 +50,10 @@ public interface MoveCalculator {
                     obstructed = true;
                 } else if (board.getPiece(possiblePosition) == null) {
                     moves.add(new ChessMove(currentPosition, possiblePosition, null));
-                } else if (board.getPiece(possiblePosition).getTeamColor() != team) {
+                } else if (board.getPositionTeam(possiblePosition) != team) {
                     moves.add(new ChessMove(currentPosition, possiblePosition, null));
                     obstructed = true;
-                } else if (board.getPiece(possiblePosition).getTeamColor() == team) {
+                } else if (board.getPositionTeam(possiblePosition) == team) {
                     obstructed = true;
                 } else {
                     obstructed = true;
