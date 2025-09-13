@@ -37,6 +37,10 @@ public class ChessBoard {
         return boardLayout[position.getRow() - 1][position.getColumn() - 1];
     }
 
+    public ChessGame.TeamColor getPositionTeam(ChessPosition position) {
+        return getPiece(position).getTeamColor();
+    }
+
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
