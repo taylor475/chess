@@ -38,7 +38,11 @@ public class ChessBoard {
     }
 
     public ChessGame.TeamColor getPositionTeam(ChessPosition position) {
-        return getPiece(position).getTeamColor();
+        if (getPiece(position) != null) {
+            return getPiece(position).getTeamColor();
+        } else {
+            return null;
+        }
     }
 
     /**
