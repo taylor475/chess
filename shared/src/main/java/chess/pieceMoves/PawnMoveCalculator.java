@@ -26,22 +26,22 @@ public class PawnMoveCalculator {
             // Check for forward movement
             ChessPosition forwardPosition = new ChessPosition(currentY + moveIncrement, currentX);
             if (isValidSquare(forwardPosition) && board.getPiece(forwardPosition) == null) {
-                moves.add(new ChessMove(currentPosition, forwardPosition, null));
+                moves.add(new ChessMove(currentPosition, forwardPosition, promotionPiece));
             }
             // Check for left attack
             ChessPosition leftPosition = new ChessPosition(currentY + moveIncrement, currentX - 1);
             if (isValidSquare(leftPosition) && board.getPiece(leftPosition) != null && board.getPositionTeam(leftPosition) != team) {
-                moves.add(new ChessMove(currentPosition, leftPosition, null));
+                moves.add(new ChessMove(currentPosition, leftPosition, promotionPiece));
             }
             // Check for right attack
             ChessPosition rightPosition = new ChessPosition(currentY + moveIncrement, currentX + 1);
             if (isValidSquare(rightPosition) && board.getPiece(rightPosition) != null && board.getPositionTeam(rightPosition) != team) {
-                moves.add(new ChessMove(currentPosition, rightPosition, null));
+                moves.add(new ChessMove(currentPosition, rightPosition, promotionPiece));
             }
             // Check for first double move
             ChessPosition doubleForwardPosition = new ChessPosition(currentY + moveIncrement * 2, currentX);
             if (isValidSquare(doubleForwardPosition) && ((team == ChessGame.TeamColor.WHITE && currentY == 2) || (team == ChessGame.TeamColor.BLACK && currentY == 7)) && board.getPiece(forwardPosition) == null && board.getPiece(doubleForwardPosition) == null) {
-                moves.add(new ChessMove(currentPosition, doubleForwardPosition, null));
+                moves.add(new ChessMove(currentPosition, doubleForwardPosition, promotionPiece));
             }
         }
 
