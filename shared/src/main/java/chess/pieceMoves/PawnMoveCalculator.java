@@ -34,7 +34,7 @@ public class PawnMoveCalculator {
                 moves.add(new ChessMove(currentPosition, leftPosition, null));
             }
             // Check for right attack
-            ChessPosition rightPosition = new ChessPosition(currentY + moveIncrement, currentX);
+            ChessPosition rightPosition = new ChessPosition(currentY + moveIncrement, currentX + 1);
             if (isValidSquare(rightPosition) && board.getPiece(rightPosition) != null && board.getPositionTeam(rightPosition) != team) {
                 moves.add(new ChessMove(currentPosition, rightPosition, null));
             }
