@@ -37,14 +37,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return this.team;
+        return team;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        return this.type;
+        return type;
     }
 
     /**
@@ -55,7 +55,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        return switch (this.type) {
+        return switch (type) {
             case KING -> KingMoveCalculator.getMoves(board, myPosition);
             case QUEEN -> QueenMoveCalculator.getMoves(board, myPosition);
             case BISHOP -> BishopMoveCalculator.getMoves(board, myPosition);

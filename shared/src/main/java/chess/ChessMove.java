@@ -25,14 +25,14 @@ public class ChessMove {
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
-        return this.startPosition;
+        return startPosition;
     }
 
     /**
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
-        return this.endPosition;
+        return endPosition;
     }
 
     /**
