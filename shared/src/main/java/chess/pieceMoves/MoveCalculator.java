@@ -13,7 +13,7 @@ public interface MoveCalculator {
         return null;
     }
 
-    static boolean isValidSquare(ChessPosition position) {
+    static boolean isOnBoard(ChessPosition position) {
         return (position.getRow() >= 1 && position.getRow() <= 8) && (position.getColumn() >= 1 && position.getColumn() <= 8);
     }
 
@@ -26,7 +26,7 @@ public interface MoveCalculator {
         ChessGame.TeamColor team = board.getPositionTeam(currentPosition);
         for (int[] relativeMove : relativeMoves) {
             ChessPosition possiblePosition = new ChessPosition(currentY + relativeMove[1], currentX + relativeMove[0]);
-            if (isValidSquare(possiblePosition) && board.getPositionTeam(possiblePosition) != team) {
+            if (isOnBoard(possiblePosition) && board.getPositionTeam(possiblePosition) != team) {
                 moves.add(new ChessMove(currentPosition, possiblePosition, null));
             }
         }
@@ -46,7 +46,7 @@ public interface MoveCalculator {
             int i = 1;
             while (!obstructed) {
                 ChessPosition possiblePosition = new ChessPosition(currentY + direction[1] * i, currentX + direction[0] * i);
-                if (!isValidSquare(possiblePosition)) {
+                if (!isOnBoard(possiblePosition)) {
                     obstructed = true;
                 } else if (board.getPiece(possiblePosition) == null) {
                     moves.add(new ChessMove(currentPosition, possiblePosition, null));
