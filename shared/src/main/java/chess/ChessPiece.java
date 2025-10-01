@@ -81,9 +81,13 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return "ChessPiece{" +
-                "team=" + team +
-                ", type=" + type +
-                '}';
+        return switch (type) {
+            case KING -> team == ChessGame.TeamColor.WHITE ? "K" : "k";
+            case QUEEN -> team == ChessGame.TeamColor.WHITE ? "Q" : "q";
+            case BISHOP -> team == ChessGame.TeamColor.WHITE ? "B" : "b";
+            case KNIGHT -> team == ChessGame.TeamColor.WHITE ? "N" : "n";
+            case ROOK -> team == ChessGame.TeamColor.WHITE ? "R" : "r";
+            case PAWN -> team == ChessGame.TeamColor.WHITE ? "P" : "p";
+        };
     }
 }
