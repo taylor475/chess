@@ -157,8 +157,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        // If the king is in check and there's no valid moves (stalemate), it's checkmate
-        return isInCheck(teamColor) && isInStalemate(teamColor);
+        // If the king is in check and there's no valid moves, it's checkmate
+        return isInCheck(teamColor) && !teamHasValidMoves(teamColor);
     }
 
     /**
@@ -169,6 +169,14 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        if (isInCheck(teamColor)) {
+            return false;
+        } else {
+            return !teamHasValidMoves(teamColor);
+        }
+    }
+
+    public boolean teamHasValidMoves(TeamColor teamColor) {
         for (int y = 1; y <= 8; y++) {
             for (int x = 1; x <= 8; x++) {
                 ChessPosition currentPosition = new ChessPosition(y, x);
@@ -181,13 +189,12 @@ public class ChessGame {
                 if (teamColor == currentPiece.getTeamColor()) {
                     moves = (HashSet<ChessMove>) validMoves(currentPosition);
                     if (moves != null && !moves.isEmpty()) {
-                        // If there are any valid moves, it's not stalemate
-                        return false;
+                        return true;
                     }
                 }
             }
         }
-        return true;
+        return false;
     }
 
     /**
