@@ -45,8 +45,9 @@ public class ChessBoard {
      * is at that position
      */
     public ChessGame.TeamColor getPositionTeam(ChessPosition position) {
-        if (getPiece(position) != null) {
-            return getPiece(position).getTeamColor();
+        ChessPiece currentPiece = getPiece(position);
+        if (currentPiece != null) {
+            return currentPiece.getTeamColor();
         } else {
             return null;
         }
