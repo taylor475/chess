@@ -176,6 +176,12 @@ public class ChessGame {
         }
     }
 
+    /**
+     * Determines if the given team has any valid moves
+     *
+     * @param teamColor which team to check for valid moves
+     * @return True if the specified team has valid moves, otherwise false
+     */
     public boolean teamHasValidMoves(TeamColor teamColor) {
         for (int y = 1; y <= 8; y++) {
             for (int x = 1; x <= 8; x++) {
