@@ -19,7 +19,12 @@ public class PawnMoveCalculator {
 
         boolean willPromote = (team == ChessGame.TeamColor.WHITE && currentY == 7) || (team == ChessGame.TeamColor.BLACK && currentY == 2);
         if (willPromote) {
-            promotionPieces = new ChessPiece.PieceType[]{ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.QUEEN, ChessPiece.PieceType.ROOK};
+            promotionPieces = new ChessPiece.PieceType[]{
+                    ChessPiece.PieceType.BISHOP,
+                    ChessPiece.PieceType.KNIGHT,
+                    ChessPiece.PieceType.QUEEN,
+                    ChessPiece.PieceType.ROOK
+            };
         }
 
         for (ChessPiece.PieceType promotionPiece: promotionPieces) {
@@ -40,7 +45,9 @@ public class PawnMoveCalculator {
             }
             // Check for first double move
             ChessPosition doubleForwardPosition = new ChessPosition(currentY + moveIncrement * 2, currentX);
-            if (isOnBoard(doubleForwardPosition) && ((team == ChessGame.TeamColor.WHITE && currentY == 2) || (team == ChessGame.TeamColor.BLACK && currentY == 7)) && board.getPiece(forwardPosition) == null && board.getPiece(doubleForwardPosition) == null) {
+            if (isOnBoard(doubleForwardPosition)
+                    && ((team == ChessGame.TeamColor.WHITE && currentY == 2) || (team == ChessGame.TeamColor.BLACK && currentY == 7))
+                    && board.getPiece(forwardPosition) == null && board.getPiece(doubleForwardPosition) == null) {
                 moves.add(new ChessMove(currentPosition, doubleForwardPosition, promotionPiece));
             }
         }
