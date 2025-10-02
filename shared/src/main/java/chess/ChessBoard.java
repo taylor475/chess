@@ -104,10 +104,10 @@ public class ChessBoard {
     @Override
     public String toString() {
         StringBuilder output = new StringBuilder();
-        for (int y = 7; y >= 0; y--) {
+        for (int row = 7; row >= 0; row--) {
             output.append("|");
-            for (int x = 0; x < 8; x++) {
-                output.append(boardLayout[x][y] != null ? boardLayout[x][y].toString() : " ");
+            for (int col = 0; col < 8; col++) {
+                output.append(boardLayout[row][col] != null ? boardLayout[row][col].toString() : " ");
                 output.append("|");
             }
             output.append("\n");
