@@ -79,7 +79,34 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        // Check that it's the team's turn
+        boolean isTeamTurn = getTeamTurn() == board.getPositionTeam(move.getStartPosition());
+        if (!isTeamTurn) {
+            throw new InvalidMoveException("Is not the team's turn!");
+        }
+
+        // Check that valid moves exist for this piece
+        HashSet<ChessMove> validMoves = (HashSet<ChessMove>) validMoves(move.getStartPosition());
+        if (validMoves == null) {
+            throw new InvalidMoveException("No valid moves available!");
+        }
+
+        // Check that this move is a valid move
+        boolean isValidMove = validMoves.contains(move);
+        if (!isValidMove) {
+            throw new InvalidMoveException("Move is not valid!");
+        }
+
+        // Make the move
+        ChessPiece pieceToMove = board.getPiece(move.getStartPosition());
+        // Change piece type if promotion occurs
+        if (move.getPromotionPiece() != null) {
+            pieceToMove = new ChessPiece(pieceToMove.getTeamColor(), move.getPromotionPiece());
+        }
+
+        board.addPiece(move.getStartPosition(), null);
+        board.addPiece(move.getEndPosition(), pieceToMove);
+        setTeamTurn(getTeamTurn() == TeamColor.WHITE ? TeamColor.BLACK : TeamColor.WHITE);
     }
 
     /**
