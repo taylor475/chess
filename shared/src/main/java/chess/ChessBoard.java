@@ -37,6 +37,13 @@ public class ChessBoard {
         return boardLayout[position.getRow() - 1][position.getColumn() - 1];
     }
 
+    /**
+     * Gets the team of a chess piece on the chessboard
+     *
+     * @param position The position of the piece to check the team of
+     * @return Either the team of the piece at the position, or null if no piece
+     * is at that position
+     */
     public ChessGame.TeamColor getPositionTeam(ChessPosition position) {
         if (getPiece(position) != null) {
             return getPiece(position).getTeamColor();
