@@ -20,7 +20,7 @@ public class TestUtilities {
     public static void validateMoves(ChessBoard board, ChessPiece testPiece, ChessPosition startPosition,
                                      List<ChessMove> validMoves) {
         var pieceMoves = testPiece.pieceMoves(board, startPosition);
-        Assertions.assertNotNull(pieceMoves, "pieceMoves returned null");
+        Assertions.assertNotNull(pieceMoves, "piecemoves returned null");
         validateMoves(validMoves, new ArrayList<>(pieceMoves));
     }
 

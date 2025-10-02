@@ -1,10 +1,10 @@
-package chess.pieceMoves;
+package chess.piecemoves;
 
 import chess.*;
 
 import java.util.HashSet;
 
-import static chess.pieceMoves.MoveCalculator.*;
+import static chess.piecemoves.MoveCalculator.*;
 
 public class PawnMoveCalculator {
     public static HashSet<ChessMove> getMoves(ChessBoard board, ChessPosition currentPosition) {
