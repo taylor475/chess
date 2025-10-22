@@ -3,9 +3,11 @@ package service;
 import chess.ChessBoard;
 import chess.ChessGame;
 import dataaccess.*;
+import model.AuthData;
 import model.GameData;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameService {
@@ -77,5 +79,49 @@ public class GameService {
         }
 
         return gameID;
+    }
+
+    public boolean joinGame(String authToken, int gameID, String color) throws UnauthorizedException, BadRequestException {
+        AuthData authData;
+        GameData gameData;
+
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException("No auth found: " + authToken);
+        }
+
+        try {
+            gameData = gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+
+        String whiteUser = gameData.whiteUsername();
+        String blackUser = gameData.blackUsername();
+
+        if (Objects.equals(color, "WHITE")) {
+            if (whiteUser != null && !whiteUser.equals(authData.username())) {
+                return false; // white is already taken by someone else
+            } else {
+                whiteUser = authData.username();
+            }
+        } else if (Objects.equals(color, "BLACK")) {
+            if (blackUser != null && !blackUser.equals(authData.username())) {
+                return false; // black is already taken by someone else
+            } else {
+                blackUser = authData.username();
+            }
+        } else if (color != null) {
+            throw new BadRequestException("Invalid team color: " + color);
+        }
+
+        try {
+            gameDAO.updateGame(new GameData(gameID, whiteUser, blackUser, gameData.gameName(), gameData.game()));
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+
+        return true;
     }
 }
