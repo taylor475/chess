@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.BadRequestException;
+import dataaccess.UnauthorizedException;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import model.AuthData;
@@ -32,5 +33,14 @@ public class UserHandler {
             ctx.status(HttpStatus.FORBIDDEN);
             return "{ \"message\": \"Error: username already in use\" }";
         }
+    }
+
+    public Object login(Context ctx) throws UnauthorizedException, BadRequestException {
+        UserData userData = new Gson().fromJson(ctx.body(), UserData.class);
+
+        AuthData authData = userService.loginUser(userData);
+
+        ctx.status(HttpStatus.OK);
+        return new Gson().toJson(authData);
     }
 }
