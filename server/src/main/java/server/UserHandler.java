@@ -43,4 +43,13 @@ public class UserHandler {
         ctx.status(HttpStatus.OK);
         return new Gson().toJson(authData);
     }
+
+    public Object logout(Context ctx) throws UnauthorizedException {
+        String authToken = ctx.header("authorization");
+
+        userService.logoutUser(authToken);
+
+        ctx.status(HttpStatus.OK);
+        return "{}";
+    }
 }
