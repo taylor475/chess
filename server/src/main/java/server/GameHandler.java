@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import dataaccess.BadRequestException;
 import dataaccess.UnauthorizedException;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -22,5 +23,19 @@ public class GameHandler {
 
         ctx.status(HttpStatus.OK);
         return new Gson().toJson(games);
+    }
+
+    public Object createGame(Context ctx) throws BadRequestException, UnauthorizedException {
+        if (!ctx.body().contains("\"gameName\":")) {
+            throw new BadRequestException("Missing gameName");
+        }
+
+        GameData gameData = new Gson().fromJson(ctx.body(), GameData.class);
+
+        String authToken = ctx.header("authorization");
+        int gameID = gameService.createGame(authToken, gameData.gameName());
+
+        ctx.status(HttpStatus.OK);
+        return "{ \"gameID\": %d }".formatted(gameID);
     }
 }
