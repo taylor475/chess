@@ -124,4 +124,8 @@ public class GameService {
 
         return true;
     }
+
+    public void clear() {
+        gameDAO.clear();
+    }
 }
