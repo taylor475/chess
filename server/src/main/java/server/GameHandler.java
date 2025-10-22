@@ -38,4 +38,22 @@ public class GameHandler {
         ctx.status(HttpStatus.OK);
         return "{ \"gameID\": %d }".formatted(gameID);
     }
+
+    public Object joinGame(Context ctx) throws BadRequestException, UnauthorizedException {
+        if (!ctx.body().contains("\"gameID\":")) {
+            throw new BadRequestException("Missing gameID");
+        }
+
+        String authToken = ctx.header("authorization");
+        record JoinGameData(String playerColor, int gameID) {}
+        JoinGameData joinData = new Gson().fromJson(ctx.body(), JoinGameData.class);
+        boolean joinSuccess = gameService.joinGame(authToken, joinData.gameID, joinData.playerColor);
+
+        if (!joinSuccess) {
+            ctx.status(HttpStatus.FORBIDDEN);
+            return "{ \"message\": \"Error: slot already taken\" }";
+        }
+        ctx.status(HttpStatus.OK);
+        return "{}";
+    }
 }
