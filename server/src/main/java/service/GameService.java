@@ -86,7 +86,7 @@ public class GameService {
         GameData gameData;
 
         try {
-            authDAO.getAuth(authToken);
+            authData = authDAO.getAuth(authToken);
         } catch (DataAccessException e) {
             throw new UnauthorizedException("No auth found: " + authToken);
         }
