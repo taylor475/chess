@@ -8,6 +8,7 @@ import model.GameData;
 
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameService {
@@ -63,10 +64,19 @@ public class GameService {
             throw new UnauthorizedException("No auth found: " + authToken);
         }
 
-        int gameID;
-        do { // get random gameIDs until the gameID is not already in use
-            gameID = ThreadLocalRandom.current().nextInt(1 , 10000);
-        } while (gameDAO.gameExists(gameID));
+        Random random = ThreadLocalRandom.current();
+        int gameID = -1;
+        for (int attempts = 0; attempts < 10000; attempts++) {
+            int candidate = random.nextInt(1, 10000);
+            if (!gameDAO.gameExists(candidate)) {
+                gameID = candidate;
+                break;
+            }
+        }
+
+        if (gameID == -1) {
+            throw new BadRequestException("No game IDs left.");
+        }
 
         try {
             ChessGame game = new ChessGame();
