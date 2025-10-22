@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.GameDAO;
-import dataaccess.UnauthorizedException;
+import dataaccess.*;
 import model.GameData;
 
 import java.util.HashSet;
@@ -24,5 +21,19 @@ public class GameService {
             throw new UnauthorizedException("No auth found: " + authToken);
         }
         return gameDAO.listGames();
+    }
+
+    public GameData getGameData(String authToken, int gameID) throws UnauthorizedException, BadRequestException {
+        try {
+            authDAO.getAuth(authToken);
+        } catch (DataAccessException e) {
+            throw new UnauthorizedException("No auth found: " + authToken);
+        }
+
+        try {
+            return gameDAO.getGame(gameID);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
     }
 }
