@@ -12,8 +12,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class GameService {
-    private GameDAO gameDAO;
-    private AuthDAO authDAO;
+    private final GameDAO gameDAO;
+    private final AuthDAO authDAO;
 
     public GameService(GameDAO gameDAO, AuthDAO authDAO) {
         this.gameDAO = gameDAO;
