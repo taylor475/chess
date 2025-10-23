@@ -101,4 +101,9 @@ public class GameServiceTests {
         assertEquals("new", g.gameName());
         assertNotNull(g.game());
     }
+
+    @Test
+    void createGame_unauthorized() {
+        assertThrows(UnauthorizedException.class, () -> gameService.createGame("no", "no"));
+    }
 }
