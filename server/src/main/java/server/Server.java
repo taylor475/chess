@@ -38,7 +38,10 @@ public class Server {
         userHandler = new UserHandler(userService);
         gameHandler = new GameHandler(gameService);
 
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin = Javalin.create(config -> {
+            config.staticFiles.add("web");
+            config.jsonMapper(new GsonJsonMapper());
+        });
 
         // Register your endpoints and exception handlers here.
         javalin.delete("/db", this::clear);

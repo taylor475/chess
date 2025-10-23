@@ -20,7 +20,7 @@ public class UserHandler {
     }
 
     public void register(Context ctx) throws BadRequestException {
-        UserData userData = new Gson().fromJson(ctx.body(), UserData.class);
+        UserData userData = ctx.bodyAsClass(UserData.class);
 
         if (userData.username() == null || userData.password() == null) {
             throw new BadRequestException("Missing username/password");
@@ -36,7 +36,7 @@ public class UserHandler {
     }
 
     public void login(Context ctx) throws UnauthorizedException, BadRequestException {
-        UserData userData = new Gson().fromJson(ctx.body(), UserData.class);
+        UserData userData = ctx.bodyAsClass(UserData.class);
 
         if (userData == null || userData.username() == null || userData.password() == null) {
             throw new BadRequestException("Missing username/password");

@@ -30,7 +30,7 @@ public class GameHandler {
             throw new BadRequestException("Missing gameName");
         }
 
-        GameData gameData = new Gson().fromJson(ctx.body(), GameData.class);
+        GameData gameData = ctx.bodyAsClass(GameData.class);
 
         String authToken = ctx.header("authorization");
         int gameID = gameService.createGame(authToken, gameData.gameName());
@@ -45,7 +45,7 @@ public class GameHandler {
 
         String authToken = ctx.header("authorization");
         record JoinGameData(String playerColor, int gameID) {}
-        JoinGameData joinData = new Gson().fromJson(ctx.body(), JoinGameData.class);
+        JoinGameData joinData = ctx.bodyAsClass(JoinGameData.class);
         boolean joinSuccess = gameService.joinGame(authToken, joinData.gameID, joinData.playerColor);
 
         if (!joinSuccess) {
