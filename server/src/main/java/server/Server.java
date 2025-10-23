@@ -8,6 +8,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import service.UserService;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
@@ -73,11 +74,10 @@ public class Server {
         javalin.stop();
     }
 
-    private Object clear(Context ctx) {
+    private void clear(Context ctx) {
         userService.clear();
         gameService.clear();
 
-        ctx.status(HttpStatus.OK);
-        return "{}";
+        ctx.status(HttpStatus.OK).json(Map.of());
     }
 }
