@@ -58,4 +58,14 @@ public class UserServiceTests {
         assertThrows(UnauthorizedException.class,
                 () -> userService.loginUser(new UserData("taylor", "no", null)));
     }
+
+    // logoutUser tests
+
+    @Test
+    void logoutUser_success() throws Exception {
+        UserData user = new UserData("taylor", "12345", "a@a.a");
+        AuthData auth = userService.createUser(user);
+        userService.logoutUser(auth.authToken());
+        assertThrows(UnauthorizedException.class, () -> userService.getAuth(auth.authToken()));
+    }
 }
