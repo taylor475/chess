@@ -73,4 +73,14 @@ public class UserServiceTests {
     void logoutUser_invalidToken_unauthorized() {
         assertThrows(UnauthorizedException.class, () -> userService.logoutUser("no"));
     }
+
+    // getAuth tests
+
+    @Test
+    void getAuth_success() throws Exception {
+        UserData user = new UserData("taylor", "12345", "a@a.a");
+        AuthData auth = userService.createUser(user);
+        AuthData lookUp = userService.getAuth(auth.authToken());
+        assertEquals(auth.username(), lookUp.username());
+    }
 }
