@@ -1,6 +1,5 @@
 package server;
 
-import com.google.gson.Gson;
 import dataaccess.BadRequestException;
 import dataaccess.UnauthorizedException;
 import io.javalin.http.Context;
@@ -20,9 +19,15 @@ public class GameHandler {
 
     public void listGames(Context ctx) throws UnauthorizedException {
         String authToken = ctx.header("authorization");
-        HashSet<GameData> games = gameService.listGames(authToken);
 
-        ctx.status(HttpStatus.OK).json(games);
+        record GameSummary(Integer gameID, String gameName, String whiteUsername, String blackUsername) {}
+        HashSet<GameSummary> games = gameService.listGames(authToken)
+                .stream()
+                .map(g -> new GameSummary(g.gameID(), g.gameName(), g.whiteUsername(), g.blackUsername()))
+                .collect(java.util.stream.Collectors.toCollection(HashSet::new));
+
+        record ListGamesResponse(HashSet<GameSummary> games) {}
+        ctx.status(HttpStatus.OK).json(new ListGamesResponse(games));
     }
 
     public void createGame(Context ctx) throws BadRequestException, UnauthorizedException {
@@ -35,7 +40,8 @@ public class GameHandler {
         String authToken = ctx.header("authorization");
         int gameID = gameService.createGame(authToken, gameData.gameName());
 
-        ctx.status(HttpStatus.OK).json(gameID);
+        record CreateGameResponse(Integer gameID) {}
+        ctx.status(HttpStatus.OK).json(new CreateGameResponse(gameID));
     }
 
     public void joinGame(Context ctx) throws BadRequestException, UnauthorizedException {
@@ -44,10 +50,11 @@ public class GameHandler {
         }
 
         String authToken = ctx.header("authorization");
+
         record JoinGameData(String playerColor, int gameID) {}
         JoinGameData joinData = ctx.bodyAsClass(JoinGameData.class);
-        boolean joinSuccess = gameService.joinGame(authToken, joinData.gameID, joinData.playerColor);
 
+        boolean joinSuccess = gameService.joinGame(authToken, joinData.gameID, joinData.playerColor);
         if (!joinSuccess) {
             ctx.status(HttpStatus.FORBIDDEN)
                     .json(Map.of("message", "Error: slot already taken"));
