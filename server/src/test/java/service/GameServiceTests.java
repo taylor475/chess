@@ -149,4 +149,10 @@ public class GameServiceTests {
         assertThrows(BadRequestException.class,
                 () -> gameService.joinGame(tokenA, 1234, "WHITE"));
     }
+
+    @Test
+    void joinGame_unauthorized() {
+        assertThrows(UnauthorizedException.class,
+                () -> gameService.joinGame("no", 1, "WHITE"));
+    }
 }
