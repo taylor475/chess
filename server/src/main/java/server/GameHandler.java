@@ -9,6 +9,7 @@ import model.GameData;
 import service.GameService;
 
 import java.util.HashSet;
+import java.util.Map;
 
 public class GameHandler {
     private final GameService gameService;
@@ -17,15 +18,14 @@ public class GameHandler {
         this.gameService = gameService;
     }
 
-    public Object listGames(Context ctx) throws UnauthorizedException {
+    public void listGames(Context ctx) throws UnauthorizedException {
         String authToken = ctx.header("authorization");
         HashSet<GameData> games = gameService.listGames(authToken);
 
-        ctx.status(HttpStatus.OK);
-        return new Gson().toJson(games);
+        ctx.status(HttpStatus.OK).json(games);
     }
 
-    public Object createGame(Context ctx) throws BadRequestException, UnauthorizedException {
+    public void createGame(Context ctx) throws BadRequestException, UnauthorizedException {
         if (!ctx.body().contains("\"gameName\":")) {
             throw new BadRequestException("Missing gameName");
         }
@@ -35,11 +35,10 @@ public class GameHandler {
         String authToken = ctx.header("authorization");
         int gameID = gameService.createGame(authToken, gameData.gameName());
 
-        ctx.status(HttpStatus.OK);
-        return "{ \"gameID\": %d }".formatted(gameID);
+        ctx.status(HttpStatus.OK).json(gameID);
     }
 
-    public Object joinGame(Context ctx) throws BadRequestException, UnauthorizedException {
+    public void joinGame(Context ctx) throws BadRequestException, UnauthorizedException {
         if (!ctx.body().contains("\"gameID\":")) {
             throw new BadRequestException("Missing gameID");
         }
@@ -50,10 +49,9 @@ public class GameHandler {
         boolean joinSuccess = gameService.joinGame(authToken, joinData.gameID, joinData.playerColor);
 
         if (!joinSuccess) {
-            ctx.status(HttpStatus.FORBIDDEN);
-            return "{ \"message\": \"Error: slot already taken\" }";
+            ctx.status(HttpStatus.FORBIDDEN)
+                    .json(Map.of("message", "Error: slot already taken"));
         }
-        ctx.status(HttpStatus.OK);
-        return "{}";
+        ctx.status(HttpStatus.OK).json(Map.of());
     }
 }
