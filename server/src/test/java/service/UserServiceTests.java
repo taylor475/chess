@@ -23,7 +23,7 @@ public class UserServiceTests {
     // createUser tests
 
     @Test
-    void createUser_success() throws Exception {
+    void createUserSuccess() throws Exception {
         UserData user = new UserData("taylor", "12345", "a@a.a");
         AuthData auth = userService.createUser(user);
         assertNotNull(auth);
@@ -33,7 +33,7 @@ public class UserServiceTests {
     }
 
     @Test
-    void createUser_duplicate_badRequest() throws Exception {
+    void createUserDuplicate() throws Exception {
         UserData user = new UserData("taylor", "12345", "a@a.a");
         userService.createUser(user);
         assertThrows(BadRequestException.class, () -> userService.createUser(user));
@@ -42,7 +42,7 @@ public class UserServiceTests {
     // loginUser tests
 
     @Test
-    void loginUser_success() throws Exception {
+    void loginUserSuccess() throws Exception {
         UserData user = new UserData("taylor", "12345", "a@a.a");
         userService.createUser(user);
         AuthData auth = userService.loginUser(new UserData("taylor", "12345", null));
@@ -52,7 +52,7 @@ public class UserServiceTests {
     }
 
     @Test
-    void loginUser_wrongPassword_unauthorized() throws Exception {
+    void loginUserWrongPassword() throws Exception {
         UserData user = new UserData("taylor", "12345", "a@a.a");
         userService.createUser(user);
         assertThrows(UnauthorizedException.class,
@@ -62,7 +62,7 @@ public class UserServiceTests {
     // logoutUser tests
 
     @Test
-    void logoutUser_success() throws Exception {
+    void logoutUserSuccess() throws Exception {
         UserData user = new UserData("taylor", "12345", "a@a.a");
         AuthData auth = userService.createUser(user);
         userService.logoutUser(auth.authToken());
@@ -70,14 +70,14 @@ public class UserServiceTests {
     }
 
     @Test
-    void logoutUser_invalidToken_unauthorized() {
+    void logoutUserInvalidToken() {
         assertThrows(UnauthorizedException.class, () -> userService.logoutUser("no"));
     }
 
     // getAuth tests
 
     @Test
-    void getAuth_success() throws Exception {
+    void getAuthSuccess() throws Exception {
         UserData user = new UserData("taylor", "12345", "a@a.a");
         AuthData auth = userService.createUser(user);
         AuthData lookUp = userService.getAuth(auth.authToken());
@@ -85,14 +85,14 @@ public class UserServiceTests {
     }
 
     @Test
-    void getAuth_invalid_unauthorized() {
+    void getAuthInvalid() {
         assertThrows(UnauthorizedException.class, () -> userService.getAuth("missing"));
     }
 
     // clear tests
 
     @Test
-    void clear_resetsUsersAndAuth() throws Exception {
+    void clearResetsUsersAndAuth() throws Exception {
         UserData user = new UserData("taylor", "12345", "a@a.a");
         AuthData auth = userService.createUser(user);
         userService.clear();

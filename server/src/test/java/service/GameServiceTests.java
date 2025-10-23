@@ -38,7 +38,7 @@ public class GameServiceTests {
     // listGames tests
 
     @Test
-    void listGames_success() throws Exception {
+    void listGamesSuccess() throws Exception {
         int id1 = gameService.createGame(tokenA, "g1");
         int id2 = gameService.createGame(tokenA, "g2");
         HashSet<GameData> games = gameService.listGames(tokenA);
@@ -48,14 +48,14 @@ public class GameServiceTests {
     }
 
     @Test
-    void listGames_unauthorized() {
+    void listGamesUnauthorized() {
         assertThrows(UnauthorizedException.class, () -> gameService.listGames("bad-token"));
     }
 
     // getGameData tests
 
     @Test
-    void getGameData_success() throws Exception {
+    void getGameDataSuccess() throws Exception {
         int id = gameService.createGame(tokenA, "g1");
         GameData g = gameService.getGameData(tokenA, id);
         assertEquals(id, g.gameID());
@@ -64,14 +64,14 @@ public class GameServiceTests {
     }
 
     @Test
-    void getGameData_badId_BadRequest() {
+    void getGameDataBadId() {
         assertThrows(BadRequestException.class, () -> gameService.getGameData(tokenA, 9999));
     }
 
     // updateGame tests
 
     @Test
-    void updateGame_success() throws Exception {
+    void updateGameSuccess() throws Exception {
         int id = gameService.createGame(tokenA, "update");
         GameData before = gameDAO.getGame(id);
         assertNull(before.whiteUsername());
@@ -86,7 +86,7 @@ public class GameServiceTests {
     }
 
     @Test
-    void updateGame_nonexistentId_BadRequest() {
+    void updateGameNonexistentId() {
         GameData fake = new GameData(1111, null, null, "none", new ChessGame());
         assertThrows(BadRequestException.class, () -> gameService.updateGame(tokenA, fake));
     }
@@ -94,7 +94,7 @@ public class GameServiceTests {
     // createGame tests
 
     @Test
-    void createGame_success() throws Exception {
+    void createGameSuccess() throws Exception {
         int id = gameService.createGame(tokenA, "new");
         assertTrue(id > 0);
         GameData g = gameDAO.getGame(id);
@@ -103,14 +103,14 @@ public class GameServiceTests {
     }
 
     @Test
-    void createGame_unauthorized() {
+    void createGameUnauthorized() {
         assertThrows(UnauthorizedException.class, () -> gameService.createGame("no", "no"));
     }
 
     // joinGame tests
 
     @Test
-    void joinGame_success_white() throws Exception {
+    void joinGameSuccessWhite() throws Exception {
         int id = gameService.createGame(tokenA, "game1");
         gameService.joinGame(tokenA, id, "WHITE");
         GameData g = gameDAO.getGame(id);
@@ -119,7 +119,7 @@ public class GameServiceTests {
     }
 
     @Test
-    void joinGame_success_black() throws Exception {
+    void joinGameSuccessBlack() throws Exception {
         int id = gameService.createGame(tokenB, "game2");
         gameService.joinGame(tokenB, id, "BLACK");
         GameData g = gameDAO.getGame(id);
@@ -128,7 +128,7 @@ public class GameServiceTests {
     }
 
     @Test
-    void joinGame_stealColor_forbidden() throws Exception {
+    void joinGameStealColor() throws Exception {
         int id = gameService.createGame(tokenA, "steal");
         gameService.joinGame(tokenA, id, "BLACK");
         assertThrows(ForbiddenException.class,
@@ -136,7 +136,7 @@ public class GameServiceTests {
     }
 
     @Test
-    void joinGame_invalidColor_badRequest() throws Exception {
+    void joinGameInvalidColor() throws Exception {
         int id = gameService.createGame(tokenA, "bad-color");
         assertThrows(BadRequestException.class,
                 () -> gameService.joinGame(tokenA, id, "GREEN"));
@@ -145,13 +145,13 @@ public class GameServiceTests {
     }
 
     @Test
-    void joinGame_badId_badRequest() {
+    void joinGameBadId() {
         assertThrows(BadRequestException.class,
                 () -> gameService.joinGame(tokenA, 1234, "WHITE"));
     }
 
     @Test
-    void joinGame_unauthorized() {
+    void joinGameUnauthorized() {
         assertThrows(UnauthorizedException.class,
                 () -> gameService.joinGame("no", 1, "WHITE"));
     }
@@ -159,7 +159,7 @@ public class GameServiceTests {
     // clear tests
 
     @Test
-    void clear_resetsGames() throws Exception {
+    void clearResetsGames() throws Exception {
         int id = gameService.createGame(tokenA, "clear");
         assertNotNull(gameDAO.getGame(id));
         gameService.clear();
