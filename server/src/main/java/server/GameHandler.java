@@ -1,5 +1,6 @@
 package server;
 
+import com.google.gson.JsonParser;
 import dataaccess.BadRequestException;
 import dataaccess.UnauthorizedException;
 import io.javalin.http.Context;
@@ -49,7 +50,24 @@ public class GameHandler {
             throw new BadRequestException("Missing gameID");
         }
 
+        record JoinGameRequest(String playerColor, Integer gameID) {}
         String authToken = ctx.header("authorization");
+        JoinGameRequest req = ctx.bodyAsClass(JoinGameRequest.class);
+
+        String color = req == null
+                ? null
+                : req.playerColor;
+        Integer gameID = req == null
+                ? null
+                : req.gameID;
+
+        if (gameID == null) {
+            throw new BadRequestException("Missing gameID");
+        }
+
+        if (color == null || color.isBlank() || !(color.equals("WHITE") || color.equals("BLACK"))) {
+            throw new BadRequestException("Invalid color");
+        }
 
         record JoinGameData(String playerColor, int gameID) {}
         JoinGameData joinData = ctx.bodyAsClass(JoinGameData.class);
