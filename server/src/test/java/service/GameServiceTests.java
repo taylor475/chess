@@ -155,4 +155,14 @@ public class GameServiceTests {
         assertThrows(UnauthorizedException.class,
                 () -> gameService.joinGame("no", 1, "WHITE"));
     }
+
+    // clear tests
+
+    @Test
+    void clear_resetsGames() throws Exception {
+        int id = gameService.createGame(tokenA, "clear");
+        assertNotNull(gameDAO.getGame(id));
+        gameService.clear();
+        assertTrue(gameDAO.listGames().isEmpty());
+    }
 }
