@@ -4,6 +4,7 @@ import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
+import io.javalin.json.JavalinGson;
 import org.eclipse.jetty.websocket.api.Session;
 import service.GameService;
 import service.UserService;
@@ -40,7 +41,7 @@ public class Server {
 
         javalin = Javalin.create(config -> {
             config.staticFiles.add("web");
-            config.jsonMapper(new GsonJsonMapper());
+            config.jsonMapper(new JavalinGson());
         });
 
         // Register your endpoints and exception handlers here.
