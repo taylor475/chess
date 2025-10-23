@@ -50,6 +50,16 @@ public class GameService {
             throw new UnauthorizedException("No auth found: " + authToken);
         }
 
+        if (gameData == null) {
+            throw new BadRequestException("No game data");
+        }
+
+        try {
+            gameDAO.getGame(gameData.gameID());
+        } catch (DataAccessException e) {
+            throw new BadRequestException("Game not found: " + gameData.gameID());
+        }
+
         try {
             gameDAO.updateGame(gameData);
         } catch (DataAccessException e) {
