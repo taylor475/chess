@@ -50,4 +50,15 @@ public class GameServiceTests {
     void listGames_unauthorized() {
         assertThrows(UnauthorizedException.class, () -> gameService.listGames("bad-token"));
     }
+
+    // getGameData tests
+
+    @Test
+    void getGamesData_success() throws Exception {
+        int id = gameService.createGame(tokenA, "g1");
+        GameData g = gameService.getGameData(tokenA, id);
+        assertEquals(id, g.gameID());
+        assertEquals("g1", g.gameName());
+        assertNotNull(g.game());
+    }
 }
