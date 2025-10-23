@@ -64,6 +64,9 @@ public class Server {
         javalin.exception(UnauthorizedException.class, (e, ctx) -> {
             ctx.status(HttpStatus.UNAUTHORIZED).result("{ \"message\": \"Error: unauthorized\" }");
         });
+        javalin.exception(ForbiddenException.class, (e, ctx) -> {
+            ctx.status(HttpStatus.FORBIDDEN).result("{ \"message\": \"Error: forbidden\" }");
+        });
         javalin.exception(Exception.class, (e, ctx) -> {
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR).result("{ \"message\": \"Error: %s\" }".formatted(e.getMessage()));
         });
