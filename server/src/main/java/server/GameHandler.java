@@ -11,7 +11,7 @@ import service.GameService;
 import java.util.HashSet;
 
 public class GameHandler {
-    private GameService gameService;
+    private final GameService gameService;
 
     public GameHandler(GameService gameService) {
         this.gameService = gameService;
