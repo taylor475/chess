@@ -4,7 +4,12 @@ import dataaccess.AuthDAO;
 import dataaccess.MemoryAuthDAO;
 import dataaccess.MemoryUserDAO;
 import dataaccess.UserDAO;
+import model.AuthData;
+import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTests {
     private UserDAO userDAO;
@@ -16,5 +21,17 @@ public class UserServiceTests {
         userDAO = new MemoryUserDAO();
         authDAO = new MemoryAuthDAO();
         userService = new UserService(userDAO, authDAO);
+    }
+
+    // createUser tests
+
+    @Test
+    void createUser_success() throws Exception {
+        UserData user = new UserData("taylor", "12345", "a@a.a");
+        AuthData auth = userService.createUser(user);
+        assertNotNull(auth);
+        assertEquals("taylor", auth.username());
+        assertEquals("taylor", authDAO.getAuth(auth.authToken()).username());
+        assertTrue(userDAO.authenticateUser("taylor", "12345"));
     }
 }
