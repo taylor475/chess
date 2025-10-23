@@ -44,14 +44,14 @@ public class Server {
         javalin.delete("/db", this::clear);
 
         // UserHandler endpoints
-        javalin.post("/user", ctx -> userHandler.register(ctx));
-        javalin.post("/session", ctx -> userHandler.login(ctx));
-        javalin.delete("/session", ctx -> userHandler.logout(ctx));
+        javalin.post("/user", userHandler::register);
+        javalin.post("/session", userHandler::login);
+        javalin.delete("/session", userHandler::logout);
 
         // GameHandler endpoints
-        javalin.get("/game", ctx -> gameHandler.listGames(ctx));
-        javalin.post("/game", ctx -> gameHandler.createGame(ctx));
-        javalin.put("/game", ctx -> gameHandler.joinGame(ctx));
+        javalin.get("/game", gameHandler::listGames);
+        javalin.post("/game", gameHandler::createGame);
+        javalin.put("/game", gameHandler::joinGame);
 
         // Exception handlers
         javalin.exception(BadRequestException.class, (e, ctx) -> {
