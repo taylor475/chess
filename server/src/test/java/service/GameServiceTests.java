@@ -90,4 +90,15 @@ public class GameServiceTests {
         GameData fake = new GameData(1111, null, null, "none", new ChessGame());
         assertThrows(BadRequestException.class, () -> gameService.updateGame(tokenA, fake));
     }
+
+    // createGame tests
+
+    @Test
+    void createGame_success() throws Exception {
+        int id = gameService.createGame(tokenA, "new");
+        assertTrue(id > 0);
+        GameData g = gameDAO.getGame(id);
+        assertEquals("new", g.gameName());
+        assertNotNull(g.game());
+    }
 }
