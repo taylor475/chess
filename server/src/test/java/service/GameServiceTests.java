@@ -54,11 +54,16 @@ public class GameServiceTests {
     // getGameData tests
 
     @Test
-    void getGamesData_success() throws Exception {
+    void getGameData_success() throws Exception {
         int id = gameService.createGame(tokenA, "g1");
         GameData g = gameService.getGameData(tokenA, id);
         assertEquals(id, g.gameID());
         assertEquals("g1", g.gameName());
         assertNotNull(g.game());
+    }
+
+    @Test
+    void getGameData_badId_BadRequest() {
+        assertThrows(BadRequestException.class, () -> gameService.getGameData(tokenA, 9999));
     }
 }
