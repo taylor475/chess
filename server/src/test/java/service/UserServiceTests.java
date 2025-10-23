@@ -88,4 +88,16 @@ public class UserServiceTests {
     void getAuth_invalid_unauthorized() {
         assertThrows(UnauthorizedException.class, () -> userService.getAuth("missing"));
     }
+
+    // clear tests
+
+    @Test
+    void clear_resetsUsersAndAuth() throws Exception {
+        UserData user = new UserData("taylor", "12345", "a@a.a");
+        AuthData auth = userService.createUser(user);
+        userService.clear();
+
+        assertThrows(UnauthorizedException.class, () -> userService.getAuth(auth.authToken()));
+        assertThrows(DataAccessException.class, () -> userDAO.authenticateUser("taylor", "12345"));
+    }
 }
