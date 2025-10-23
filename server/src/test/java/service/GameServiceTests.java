@@ -66,4 +66,21 @@ public class GameServiceTests {
     void getGameData_badId_BadRequest() {
         assertThrows(BadRequestException.class, () -> gameService.getGameData(tokenA, 9999));
     }
+
+    // updateGame tests
+
+    @Test
+    void updateGame_success() throws Exception {
+        int id = gameService.createGame(tokenA, "update");
+        GameData before = gameDAO.getGame(id);
+        assertNull(before.whiteUsername());
+        assertNull(before.blackUsername());
+
+        GameData after = new GameData(id, "taylor", "rolyat", before.gameName(), before.game());
+        gameService.updateGame(tokenA, after);
+
+        GameData stored = gameDAO.getGame(id);
+        assertEquals("taylor", stored.whiteUsername());
+        assertEquals("rolyat", stored.blackUsername());
+    }
 }
