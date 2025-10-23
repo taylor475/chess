@@ -74,6 +74,9 @@ public class Server {
     }
 
     private Object clear(Context ctx) {
+        userService.clear();
+        gameService.clear();
+
         ctx.status(HttpStatus.OK);
         return "{}";
     }
