@@ -91,7 +91,7 @@ public class GameService {
         return gameID;
     }
 
-    public boolean joinGame(String authToken, int gameID, String color) throws UnauthorizedException, BadRequestException {
+    public void joinGame(String authToken, int gameID, String color) throws UnauthorizedException, BadRequestException, ForbiddenException {
         AuthData authData;
         GameData gameData;
 
@@ -112,13 +112,13 @@ public class GameService {
 
         if (Objects.equals(color, "WHITE")) {
             if (whiteUser != null && !whiteUser.equals(authData.username())) {
-                return false; // white is already taken by someone else
+                throw new ForbiddenException("Color already taken"); // white is already taken by someone else
             } else {
                 whiteUser = authData.username();
             }
         } else if (Objects.equals(color, "BLACK")) {
             if (blackUser != null && !blackUser.equals(authData.username())) {
-                return false; // black is already taken by someone else
+                throw new ForbiddenException("Color already taken"); // black is already taken by someone else
             } else {
                 blackUser = authData.username();
             }
@@ -131,8 +131,6 @@ public class GameService {
         } catch (DataAccessException e) {
             throw new BadRequestException(e.getMessage());
         }
-
-        return true;
     }
 
     public void clear() {

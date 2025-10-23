@@ -72,11 +72,7 @@ public class GameHandler {
         record JoinGameData(String playerColor, int gameID) {}
         JoinGameData joinData = ctx.bodyAsClass(JoinGameData.class);
 
-        boolean joinSuccess = gameService.joinGame(authToken, joinData.gameID, joinData.playerColor);
-        if (!joinSuccess) {
-            ctx.status(HttpStatus.FORBIDDEN)
-                    .json(Map.of("message", "Error: slot already taken"));
-        }
+        gameService.joinGame(authToken, joinData.gameID, joinData.playerColor);
         ctx.status(HttpStatus.OK).json(Map.of());
     }
 }
