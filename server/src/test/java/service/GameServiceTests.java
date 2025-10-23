@@ -117,4 +117,13 @@ public class GameServiceTests {
         assertEquals("taylor", g.whiteUsername());
         assertNull(g.blackUsername());
     }
+
+    @Test
+    void joinGame_success_black() throws Exception {
+        int id = gameService.createGame(tokenB, "game2");
+        gameService.joinGame(tokenB, id, "BLACK");
+        GameData g = gameDAO.getGame(id);
+        assertEquals("rolyat", g.blackUsername());
+        assertNull(g.whiteUsername());
+    }
 }
