@@ -83,4 +83,9 @@ public class UserServiceTests {
         AuthData lookUp = userService.getAuth(auth.authToken());
         assertEquals(auth.username(), lookUp.username());
     }
+
+    @Test
+    void getAuth_invalid_unauthorized() {
+        assertThrows(UnauthorizedException.class, () -> userService.getAuth("missing"));
+    }
 }
