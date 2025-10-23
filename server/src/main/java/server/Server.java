@@ -54,13 +54,13 @@ public class Server {
 
         // Exception handlers
         javalin.exception(BadRequestException.class, (e, ctx) -> {
-            ctx.status(400).result("{ \"message\": \"Error: bad request\" }");
+            ctx.status(HttpStatus.BAD_REQUEST).result("{ \"message\": \"Error: bad request\" }");
         });
         javalin.exception(UnauthorizedException.class, (e, ctx) -> {
-            ctx.status(401).result("{ \"message\": \"Error: unauthorized\" }");
+            ctx.status(HttpStatus.UNAUTHORIZED).result("{ \"message\": \"Error: unauthorized\" }");
         });
         javalin.exception(Exception.class, (e, ctx) -> {
-            ctx.status(500).result("{ \"message\": \"Error: %s\" }".formatted(e.getMessage()));
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR).result("{ \"message\": \"Error: %s\" }".formatted(e.getMessage()));
         });
     }
 
