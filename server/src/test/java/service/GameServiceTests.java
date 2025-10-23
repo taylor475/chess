@@ -134,4 +134,13 @@ public class GameServiceTests {
         assertThrows(ForbiddenException.class,
                 () -> gameService.joinGame(tokenB, id, "BLACK"));
     }
+
+    @Test
+    void joinGame_invalidColor_badRequest() throws Exception {
+        int id = gameService.createGame(tokenA, "bad-color");
+        assertThrows(BadRequestException.class,
+                () -> gameService.joinGame(tokenA, id, "GREEN"));
+        assertThrows(BadRequestException.class,
+                () -> gameService.joinGame(tokenA, id, ""));
+    }
 }
