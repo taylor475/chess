@@ -38,4 +38,16 @@ public class UserServiceTests {
         userService.createUser(user);
         assertThrows(BadRequestException.class, () -> userService.createUser(user));
     }
+
+    // loginUser tests
+
+    @Test
+    void loginUser_success() throws Exception {
+        UserData user = new UserData("taylor", "12345", "a@a.a");
+        userService.createUser(user);
+        AuthData auth = userService.loginUser(new UserData("taylor", "12345", null));
+        assertNotNull(auth);
+        assertEquals("taylor", auth.username());
+        assertEquals("taylor", authDAO.getAuth(auth.authToken()).username());
+    }
 }
