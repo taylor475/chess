@@ -126,4 +126,12 @@ public class GameServiceTests {
         assertEquals("rolyat", g.blackUsername());
         assertNull(g.whiteUsername());
     }
+
+    @Test
+    void joinGame_stealColor_forbidden() throws Exception {
+        int id = gameService.createGame(tokenA, "steal");
+        gameService.joinGame(tokenA, id, "BLACK");
+        assertThrows(ForbiddenException.class,
+                () -> gameService.joinGame(tokenB, id, "BLACK"));
+    }
 }
