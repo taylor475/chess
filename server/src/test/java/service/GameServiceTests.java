@@ -8,8 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTests {
     private GameDAO gameDAO;
@@ -45,5 +44,10 @@ public class GameServiceTests {
         assertNotNull(games);
         assertTrue(games.stream().anyMatch(g -> g.gameID() == id1));
         assertTrue(games.stream().anyMatch(g -> g.gameID() == id2));
+    }
+
+    @Test
+    void listGames_unauthorized() {
+        assertThrows(UnauthorizedException.class, () -> gameService.listGames("bad-token"));
     }
 }
