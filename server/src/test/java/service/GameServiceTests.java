@@ -106,4 +106,15 @@ public class GameServiceTests {
     void createGame_unauthorized() {
         assertThrows(UnauthorizedException.class, () -> gameService.createGame("no", "no"));
     }
+
+    // joinGame tests
+
+    @Test
+    void joinGame_success_white() throws Exception {
+        int id = gameService.createGame(tokenA, "game1");
+        gameService.joinGame(tokenA, id, "WHITE");
+        GameData g = gameDAO.getGame(id);
+        assertEquals("taylor", g.whiteUsername());
+        assertNull(g.blackUsername());
+    }
 }
