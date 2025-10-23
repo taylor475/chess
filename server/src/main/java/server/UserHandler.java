@@ -10,6 +10,8 @@ import model.AuthData;
 import model.UserData;
 import service.UserService;
 
+import java.util.Map;
+
 public class UserHandler {
     private final UserService userService;
 
@@ -17,7 +19,7 @@ public class UserHandler {
         this.userService = userService;
     }
 
-    public Object register(Context ctx) throws BadRequestException {
+    public void register(Context ctx) throws BadRequestException {
         UserData userData = new Gson().fromJson(ctx.body(), UserData.class);
 
         if (userData.username() == null || userData.password() == null) {
@@ -26,30 +28,29 @@ public class UserHandler {
 
         try {
             AuthData authData = userService.createUser(userData);
-            ctx.status(HttpStatus.OK);
-            ctx.contentType("application/json");
-            return new Gson().toJson(authData);
+            ctx.status(HttpStatus.OK).json(authData);
         } catch (BadRequestException e) {
-            ctx.status(HttpStatus.FORBIDDEN);
-            return "{ \"message\": \"Error: username already in use\" }";
+            ctx.status(HttpStatus.FORBIDDEN)
+                    .json(Map.of("message", "Error: username already in use"));
         }
     }
 
-    public Object login(Context ctx) throws UnauthorizedException, BadRequestException {
+    public void login(Context ctx) throws UnauthorizedException, BadRequestException {
         UserData userData = new Gson().fromJson(ctx.body(), UserData.class);
 
-        AuthData authData = userService.loginUser(userData);
+        if (userData == null || userData.username() == null || userData.password() == null) {
+            throw new BadRequestException("Missing username/password");
+        }
 
-        ctx.status(HttpStatus.OK);
-        return new Gson().toJson(authData);
+        AuthData authData = userService.loginUser(userData);
+        ctx.status(HttpStatus.OK).json(authData);
     }
 
-    public Object logout(Context ctx) throws UnauthorizedException {
+    public void logout(Context ctx) throws UnauthorizedException {
         String authToken = ctx.header("authorization");
 
         userService.logoutUser(authToken);
 
-        ctx.status(HttpStatus.OK);
-        return "{}";
+        ctx.status(HttpStatus.OK).json(Map.of()); // empty Map.of() returns {}
     }
 }
