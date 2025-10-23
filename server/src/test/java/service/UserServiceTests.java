@@ -50,4 +50,12 @@ public class UserServiceTests {
         assertEquals("taylor", auth.username());
         assertEquals("taylor", authDAO.getAuth(auth.authToken()).username());
     }
+
+    @Test
+    void loginUser_wrongPassword_unauthorized() throws Exception {
+        UserData user = new UserData("taylor", "12345", "a@a.a");
+        userService.createUser(user);
+        assertThrows(UnauthorizedException.class,
+                () -> userService.loginUser(new UserData("taylor", "no", null)));
+    }
 }
