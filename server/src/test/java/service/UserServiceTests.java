@@ -68,4 +68,9 @@ public class UserServiceTests {
         userService.logoutUser(auth.authToken());
         assertThrows(UnauthorizedException.class, () -> userService.getAuth(auth.authToken()));
     }
+
+    @Test
+    void logoutUser_invalidToken_unauthorized() {
+        assertThrows(UnauthorizedException.class, () -> userService.logoutUser("no"));
+    }
 }
