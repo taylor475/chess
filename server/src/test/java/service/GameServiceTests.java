@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.*;
 import model.GameData;
 import model.UserData;
@@ -82,5 +83,11 @@ public class GameServiceTests {
         GameData stored = gameDAO.getGame(id);
         assertEquals("taylor", stored.whiteUsername());
         assertEquals("rolyat", stored.blackUsername());
+    }
+
+    @Test
+    void updateGame_nonexistentId_BadRequest() {
+        GameData fake = new GameData(1111, null, null, "none", new ChessGame());
+        assertThrows(BadRequestException.class, () -> gameService.updateGame(tokenA, fake));
     }
 }
