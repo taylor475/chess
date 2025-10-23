@@ -1,9 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryUserDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,5 +30,12 @@ public class UserServiceTests {
         assertEquals("taylor", auth.username());
         assertEquals("taylor", authDAO.getAuth(auth.authToken()).username());
         assertTrue(userDAO.authenticateUser("taylor", "12345"));
+    }
+
+    @Test
+    void createUser_duplicate_badRequest() throws Exception {
+        UserData user = new UserData("taylor", "12345", "a@a.a");
+        userService.createUser(user);
+        assertThrows(BadRequestException.class, () -> userService.createUser(user));
     }
 }
