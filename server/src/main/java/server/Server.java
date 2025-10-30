@@ -16,15 +16,15 @@ public class Server {
 
     private final Javalin javalin;
 
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
-    private GameDAO gameDAO;
+    private final UserDAO userDAO;
+    private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
 
     static UserService userService;
     static GameService gameService;
 
-    private UserHandler userHandler;
-    private GameHandler gameHandler;
+    private final UserHandler userHandler;
+    private final GameHandler gameHandler;
 
     static ConcurrentHashMap<Session, Integer> gameSessions = new ConcurrentHashMap<>();
 
