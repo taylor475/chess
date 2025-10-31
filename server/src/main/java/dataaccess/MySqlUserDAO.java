@@ -51,22 +51,20 @@ public class MySqlUserDAO implements UserDAO {
 
     @Override
     public boolean authenticateUser(String username, String password) throws DataAccessException {
-        boolean userExists = false;
-        for (UserData user : db) {
-            if (user.username().equals(username)) {
-                userExists = true;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT username, password, email FROM user WHERE username=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return true;
+                    }
+                }
             }
-            if (user.username().equals(username) &&
-                    user.password().equals(password)) {
-                return true;
-            }
+        } catch (DataAccessException | SQLException e) {
+            throw new DataAccessException(String.format("User does not exist: %s", username));
         }
-        // If the user exists but didn't return earlier, then the password is wrong
-        if (userExists) {
-            return false;
-        } else {
-            throw new DataAccessException("User does not exist: " + username);
-        }
+        return false;
     }
 
     @Override
