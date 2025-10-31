@@ -18,7 +18,7 @@ public class MySqlAuthDAO implements AuthDAO {
         try {
             String statement = "INSERT INTO auth (username, token) VALUES (?, ?)";
             String jsonStatement = new Gson().toJson(authData);
-            int id = executeUpdate(statement, authData.username(), authData.authToken(), jsonStatement);
+            executeUpdate(statement, authData.username(), authData.authToken(), jsonStatement);
         } catch (DataAccessException _) {
         }
     }

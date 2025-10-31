@@ -1,5 +1,6 @@
 package dataaccess;
 
+import com.google.gson.Gson;
 import model.UserData;
 
 import java.sql.*;
@@ -40,7 +41,9 @@ public class MySqlUserDAO implements UserDAO {
         }
         // Failure to find the user means the user doesn't exist and can be added
         catch (DataAccessException e) {
-            db.add(user);
+            String statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+            String jsonStatement = new Gson().toJson(user);
+            executeUpdate(statement, user.username(), user.password(), user.email(), jsonStatement);
             return;
         }
         throw new DataAccessException("User already exists: " + user.username());
