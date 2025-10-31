@@ -2,6 +2,7 @@ package dataaccess;
 
 import com.google.gson.Gson;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.HashSet;
@@ -43,7 +44,7 @@ public class MySqlUserDAO implements UserDAO {
         catch (DataAccessException e) {
             String statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
             String jsonStatement = new Gson().toJson(user);
-            executeUpdate(statement, user.username(), user.password(), user.email(), jsonStatement);
+            executeUpdate(statement, user.username(), hashPassword(user.password()), user.email(), jsonStatement);
             return;
         }
         throw new DataAccessException("User already exists: " + user.username());
@@ -51,20 +52,8 @@ public class MySqlUserDAO implements UserDAO {
 
     @Override
     public boolean authenticateUser(String username, String password) throws DataAccessException {
-        try (Connection conn = DatabaseManager.getConnection()) {
-            String statement = "SELECT username, password, email FROM user WHERE username=?";
-            try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                ps.setString(1, username);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        return true;
-                    }
-                }
-            }
-        } catch (DataAccessException | SQLException e) {
-            throw new DataAccessException(String.format("User does not exist: %s", username));
-        }
-        return false;
+        UserData user = getUser(username);
+        return BCrypt.checkpw(password, user.password());
     }
 
     @Override
@@ -125,5 +114,14 @@ public class MySqlUserDAO implements UserDAO {
         } catch (SQLException | DataAccessException e) {
             throw new DataAccessException(String.format("Unable to configure database: %s", e.getMessage()));
         }
+    }
+
+    private String hashPassword(String password) {
+        String salt = BCrypt.gensalt();
+        return BCrypt.hashpw(password, salt);
+    }
+
+    private boolean compareHashes(String rawPassword, String hashedPassword) {
+        BCrypt.checkpw()
     }
 }
