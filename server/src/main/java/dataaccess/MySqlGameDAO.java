@@ -85,11 +85,10 @@ public class MySqlGameDAO implements GameDAO {
     @Override
     public void updateGame(GameData game) throws DataAccessException {
         try {
-            db.remove(getGame(game.gameID()));
-            db.add(game);
-        }
-        catch (DataAccessException e) {
-            db.add(game);
+            String statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, chessGame=? WHERE gameId=?";
+            String jsonStatement = new Gson().toJson(game);
+            executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), game.gameID(), jsonStatement);
+        } catch (DataAccessException _) {
         }
     }
 
