@@ -9,8 +9,6 @@ import java.util.HashSet;
 import static java.sql.Types.NULL;
 
 public class MySqlAuthDAO implements AuthDAO {
-    private HashSet<AuthData> db;
-
     public MySqlAuthDAO() throws DataAccessException {
         configureDatabase();
     }
