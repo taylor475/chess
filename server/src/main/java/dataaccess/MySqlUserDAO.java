@@ -71,10 +71,14 @@ public class MySqlUserDAO implements UserDAO {
 
     @Override
     public void clear() {
-        db = HashSet.newHashSet(8);
+        try {
+            String statement = "TRUNCATE auth";
+            executeUpdate(statement);
+        } catch (DataAccessException _) {
+        }
     }
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+    private void executeUpdate(String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
@@ -92,10 +96,9 @@ public class MySqlUserDAO implements UserDAO {
 
                 ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    rs.getInt(1);
                 }
 
-                return 0;
             }
         } catch (SQLException | DataAccessException e) {
             throw new DataAccessException(String.format("Unable to update database: %s", e.getMessage()));
