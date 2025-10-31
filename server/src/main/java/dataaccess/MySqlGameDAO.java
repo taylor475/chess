@@ -1,5 +1,7 @@
 package dataaccess;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
 
 import java.sql.*;
@@ -14,7 +16,25 @@ public class MySqlGameDAO implements GameDAO {
 
     @Override
     public HashSet<GameData> listGames() {
-        return db;
+        HashSet<GameData> result = new HashSet<GameData>(8);
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT gameId, whiteUsername, blackUsername, gameName, chessGame FROM game";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int gameId = rs.getInt("gameId");
+                        String whiteUsername = rs.getString("whiteUsername");
+                        String blackUsername = rs.getString("blackUsername");
+                        String gameName = rs.getString("gameName");
+                        var text = rs.getString("chessGame");
+                        ChessGame game = new Gson().fromJson(text, ChessGame.class);
+                        result.add(new GameData(gameId, whiteUsername, blackUsername, gameName, game));
+                    }
+                }
+            }
+        } catch (Exception _) {
+        }
+        return result;
     }
 
     @Override
