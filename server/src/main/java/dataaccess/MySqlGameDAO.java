@@ -8,8 +8,8 @@ import java.util.HashSet;
 import static java.sql.Types.NULL;
 
 public class MySqlGameDAO implements GameDAO {
-    public MySqlGameDAO() {
-        db = HashSet.newHashSet(8);
+    public MySqlGameDAO() throws DataAccessException {
+        configureDatabase();
     }
 
     @Override
