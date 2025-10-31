@@ -8,8 +8,8 @@ import java.util.HashSet;
 import static java.sql.Types.NULL;
 
 public class MySqlUserDAO implements UserDAO {
-    public MySqlUserDAO() {
-        db = HashSet.newHashSet(8);
+    public MySqlUserDAO() throws DataAccessException {
+        configureDatabase();
     }
 
     @Override
