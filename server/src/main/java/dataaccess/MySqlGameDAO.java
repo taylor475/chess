@@ -95,7 +95,11 @@ public class MySqlGameDAO implements GameDAO {
 
     @Override
     public void clear() {
-        db = HashSet.newHashSet(8);
+        try {
+            String statement = "TRUNCATE game";
+            executeUpdate(statement);
+        } catch (DataAccessException _) {
+        }
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
