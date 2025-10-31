@@ -120,8 +120,4 @@ public class MySqlUserDAO implements UserDAO {
         String salt = BCrypt.gensalt();
         return BCrypt.hashpw(password, salt);
     }
-
-    private boolean compareHashes(String rawPassword, String hashedPassword) {
-        BCrypt.checkpw()
-    }
 }
