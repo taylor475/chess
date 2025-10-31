@@ -39,7 +39,12 @@ public class MySqlGameDAO implements GameDAO {
 
     @Override
     public void createGame(GameData game) throws DataAccessException {
-        db.add(game);
+        try {
+            String statement = "INSERT INTO game (gameId, whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ? ,?)";
+            String jsonStatement = new Gson().toJson(game);
+            executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), jsonStatement);
+        } catch (DataAccessException _) {
+        }
     }
 
     @Override
