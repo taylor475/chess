@@ -14,12 +14,23 @@ public class MySqlUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        for (UserData user : db) {
-            if (user.username().equals(username)) {
-                return user;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String statement = "SELECT username, password, email FROM user WHERE username=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String user = rs.getString("username");
+                        String password = rs.getString("password");
+                        String email = rs.getString("email");
+                        return new UserData(user, password, email);
+                    }
+                }
             }
+        } catch (DataAccessException | SQLException e) {
+            throw new DataAccessException(String.format("User does not exist: %s", username));
         }
-        throw new DataAccessException("User does not exist: " + username);
+        return null;
     }
 
     @Override
