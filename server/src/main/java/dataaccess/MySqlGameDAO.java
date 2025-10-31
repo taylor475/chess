@@ -74,12 +74,12 @@ public class MySqlGameDAO implements GameDAO {
 
     @Override
     public boolean gameExists(int gameID) {
-        for (GameData game : db) {
-            if (game.gameID() == gameID) {
-                return true;
-            }
+        try {
+            getGame(gameID);
+        } catch (DataAccessException e) {
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
