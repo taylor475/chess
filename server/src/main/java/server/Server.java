@@ -83,9 +83,13 @@ public class Server {
     }
 
     private void clear(Context ctx) {
-        userService.clear();
-        gameService.clear();
+        try {
+            userService.clear();
+            gameService.clear();
 
-        ctx.status(HttpStatus.OK).json(Map.of());
+            ctx.status(HttpStatus.OK).json(Map.of());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

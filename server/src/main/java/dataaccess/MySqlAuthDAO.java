@@ -52,11 +52,12 @@ public class MySqlAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
         try {
             String statement = "TRUNCATE auth";
             executeUpdate(statement);
-        } catch (DataAccessException _) {
+        } catch (DataAccessException e) {
+            throw new DataAccessException(String.format("Error clearing auth: %s", e));
         }
     }
     

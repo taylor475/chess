@@ -93,11 +93,12 @@ public class MySqlGameDAO implements GameDAO {
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
         try {
             String statement = "TRUNCATE game";
             executeUpdate(statement);
-        } catch (DataAccessException _) {
+        } catch (DataAccessException e) {
+            throw new DataAccessException(String.format("Error clearing game: %s", e));
         }
     }
 

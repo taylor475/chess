@@ -55,11 +55,12 @@ public class MySqlUserDAO implements UserDAO {
     }
 
     @Override
-    public void clear() {
+    public void clear() throws DataAccessException {
         try {
             String statement = "TRUNCATE users";
             executeUpdate(statement);
-        } catch (DataAccessException _) {
+        } catch (DataAccessException e) {
+            throw new DataAccessException(String.format("Error clearing users: %s", e));
         }
     }
 
