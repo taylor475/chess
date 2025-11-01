@@ -59,7 +59,7 @@ public class MySqlUserDAO implements UserDAO {
     @Override
     public void clear() {
         try {
-            String statement = "TRUNCATE game";
+            String statement = "TRUNCATE users";
             executeUpdate(statement);
         } catch (DataAccessException _) {
         }
