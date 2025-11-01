@@ -5,7 +5,7 @@ import model.GameData;
 import java.util.HashSet;
 
 public interface GameDAO {
-    HashSet<GameData> listGames();
+    HashSet<GameData> listGames() throws DataAccessException;
 
     void createGame(GameData game) throws DataAccessException;
 

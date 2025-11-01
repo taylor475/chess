@@ -15,8 +15,8 @@ public class MySqlGameDAO implements GameDAO {
     }
 
     @Override
-    public HashSet<GameData> listGames() {
-        HashSet<GameData> result = new HashSet<GameData>(8);
+    public HashSet<GameData> listGames() throws DataAccessException {
+        HashSet<GameData> result = new HashSet<>(8);
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "SELECT gameId, whiteUsername, blackUsername, gameName, chessGame FROM game";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -32,17 +32,18 @@ public class MySqlGameDAO implements GameDAO {
                     }
                 }
             }
-        } catch (Exception _) {
+            return result;
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("Error listing games: %s", e.getMessage()));
         }
-        return result;
     }
 
     @Override
     public void createGame(GameData game) throws DataAccessException {
         try {
             String statement = "INSERT INTO game (gameId, whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ? ,?)";
-            String jsonStatement = new Gson().toJson(game);
-            executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), jsonStatement);
+            String gameJson = new Gson().toJson(game);
+            executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), gameJson);
         } catch (DataAccessException _) {
         }
     }
@@ -65,10 +66,10 @@ public class MySqlGameDAO implements GameDAO {
                     }
                 }
             }
-        } catch (DataAccessException | SQLException e) {
             throw new DataAccessException(String.format("Game does not exist: %s", gameID));
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("Error getting game: %s", e));
         }
-        return null;
     }
 
     @Override
@@ -83,11 +84,11 @@ public class MySqlGameDAO implements GameDAO {
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-        try {
-            String statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, chessGame=? WHERE gameId=?";
-            String jsonStatement = new Gson().toJson(game);
-            executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game(), game.gameID(), jsonStatement);
-        } catch (DataAccessException _) {
+        String statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, chessGame=? WHERE gameId=?";
+        String gameJson = new Gson().toJson(game);
+        int updated = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), gameJson, game.gameID());
+        if (updated == 0) {
+            throw new DataAccessException(String.format("Game not found: %s", game.gameID()));
         }
     }
 
@@ -100,7 +101,7 @@ public class MySqlGameDAO implements GameDAO {
         }
     }
 
-    private void executeUpdate(String statement, Object... params) throws DataAccessException {
+    private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
             try (PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
                 for (int i = 0; i < params.length; i++) {
@@ -114,13 +115,7 @@ public class MySqlGameDAO implements GameDAO {
                         ps.setNull(i + 1, NULL);
                     }
                 }
-                ps.executeUpdate();
-
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    rs.getInt(1);
-                }
-
+                return ps.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
             throw new DataAccessException(String.format("Unable to update database: %s", e.getMessage()));
