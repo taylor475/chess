@@ -17,7 +17,7 @@ public class MySqlUserDAO implements UserDAO {
     @Override
     public UserData getUser(String username) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection()) {
-            String statement = "SELECT username, password, email FROM user WHERE username=?";
+            String statement = "SELECT username, password, email FROM users WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -42,7 +42,7 @@ public class MySqlUserDAO implements UserDAO {
         }
         // Failure to find the user means the user doesn't exist and can be added
         catch (DataAccessException e) {
-            String statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+            String statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
             String jsonStatement = new Gson().toJson(user);
             executeUpdate(statement, user.username(), hashPassword(user.password()), user.email(), jsonStatement);
             return;
@@ -94,7 +94,7 @@ public class MySqlUserDAO implements UserDAO {
 
     private final String[] createStatements = {
             """
-            CREATE TABLE IF NOT EXISTS user (
+            CREATE TABLE IF NOT EXISTS users (
                 username VARCHAR(255) NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 email VARCHAR(255),

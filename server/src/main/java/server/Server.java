@@ -24,15 +24,21 @@ public class Server {
     static ConcurrentHashMap<Session, Integer> gameSessions = new ConcurrentHashMap<>();
 
     public Server() {
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
+        try {
+            UserDAO userDAO = new MySqlUserDAO();
+            AuthDAO authDAO = new MySqlAuthDAO();
+            GameDAO gameDAO = new MySqlGameDAO();
 
-        userService = new UserService(userDAO, authDAO);
-        gameService = new GameService(gameDAO, authDAO);
+            userService = new UserService(userDAO, authDAO);
+            gameService = new GameService(gameDAO, authDAO);
 
-        userHandler = new UserHandler(userService);
-        gameHandler = new GameHandler(gameService);
+            userHandler = new UserHandler(userService);
+            gameHandler = new GameHandler(gameService);
+
+            DatabaseManager.createDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
 
         javalin = Javalin.create(config -> {
             config.staticFiles.add("web");
