@@ -29,25 +29,23 @@ public class MySqlUserDAO implements UserDAO {
                     }
                 }
             }
-        } catch (DataAccessException | SQLException e) {
             throw new DataAccessException(String.format("User does not exist: %s", username));
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("Error getting user: %s", e.getMessage()));
         }
-        return null;
     }
 
     @Override
     public void createUser(UserData user) throws DataAccessException {
         try {
             getUser(user.username());
+            throw new DataAccessException("User already exists: " + user.username());
         }
         // Failure to find the user means the user doesn't exist and can be added
         catch (DataAccessException e) {
             String statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
-            String jsonStatement = new Gson().toJson(user);
-            executeUpdate(statement, user.username(), hashPassword(user.password()), user.email(), jsonStatement);
-            return;
+            executeUpdate(statement, user.username(), hashPassword(user.password()), user.email());
         }
-        throw new DataAccessException("User already exists: " + user.username());
     }
 
     @Override
