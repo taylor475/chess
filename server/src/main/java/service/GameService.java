@@ -20,7 +20,7 @@ public class GameService {
         this.authDAO = authDAO;
     }
 
-    public HashSet<GameData> listGames(String authToken) throws UnauthorizedException {
+    public HashSet<GameData> listGames(String authToken) throws UnauthorizedException, DataAccessException {
         try {
             authDAO.getAuth(authToken);
         } catch (DataAccessException e) {

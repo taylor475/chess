@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.JsonParser;
 import dataaccess.BadRequestException;
+import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -18,7 +19,7 @@ public class GameHandler {
         this.gameService = gameService;
     }
 
-    public void listGames(Context ctx) throws UnauthorizedException {
+    public void listGames(Context ctx) throws UnauthorizedException, DataAccessException {
         String authToken = ctx.header("authorization");
 
         record GameSummary(Integer gameID, String gameName, String whiteUsername, String blackUsername) {}
