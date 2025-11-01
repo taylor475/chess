@@ -17,8 +17,7 @@ public class MySqlAuthDAO implements AuthDAO {
     public void addAuth(AuthData authData) {
         try {
             String statement = "INSERT INTO auth (username, token) VALUES (?, ?)";
-            String jsonStatement = new Gson().toJson(authData);
-            executeUpdate(statement, authData.username(), authData.authToken(), jsonStatement);
+            executeUpdate(statement, authData.username(), authData.authToken());
         } catch (DataAccessException _) {
         }
     }
@@ -46,10 +45,10 @@ public class MySqlAuthDAO implements AuthDAO {
                     }
                 }
             }
-        } catch (DataAccessException | SQLException e) {
             throw new DataAccessException(String.format("Auth token does not exist: %s", authToken));
+        } catch (SQLException e) {
+            throw new DataAccessException(String.format("Error getting auth: %s", e));
         }
-        return null;
     }
 
     @Override
