@@ -19,14 +19,7 @@ public class QueryManager {
                         ps.setNull(i + 1, NULL);
                     }
                 }
-                ps.executeUpdate();
-
-                ResultSet rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
+                return ps.executeUpdate();
             }
         } catch (SQLException | DataAccessException e) {
             throw new DataAccessException(String.format("Unable to update database: %s", e.getMessage()));
