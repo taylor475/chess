@@ -32,7 +32,7 @@ public class GameHandler {
         ctx.status(HttpStatus.OK).json(new ListGamesResponse(games));
     }
 
-    public void createGame(Context ctx) throws BadRequestException, UnauthorizedException {
+    public void createGame(Context ctx) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (!ctx.body().contains("\"gameName\":")) {
             throw new BadRequestException("Missing gameName");
         }
@@ -46,7 +46,7 @@ public class GameHandler {
         ctx.status(HttpStatus.OK).json(new CreateGameResponse(gameID));
     }
 
-    public void joinGame(Context ctx) throws BadRequestException, UnauthorizedException {
+    public void joinGame(Context ctx) throws BadRequestException, UnauthorizedException, DataAccessException {
         if (!ctx.body().contains("\"gameID\":")) {
             throw new BadRequestException("Missing gameID");
         }

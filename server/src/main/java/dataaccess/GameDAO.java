@@ -13,7 +13,7 @@ public interface GameDAO {
 
     boolean gameExists(int gameID);
 
-    void updateGame(GameData game) throws DataAccessException;
+    void updateGame(GameData game) throws DataAccessException, NotFoundException;
 
     void clear() throws DataAccessException;
 }

@@ -23,31 +23,39 @@ public class GameService {
     public HashSet<GameData> listGames(String authToken) throws UnauthorizedException, DataAccessException {
         try {
             authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("No auth found: " + authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException("Data access error: " + e.getMessage());
         }
         return gameDAO.listGames();
     }
 
-    public GameData getGameData(String authToken, int gameID) throws UnauthorizedException, BadRequestException {
+    public GameData getGameData(String authToken, int gameID) throws UnauthorizedException, BadRequestException, DataAccessException {
         try {
             authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("No auth found: " + authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         try {
             return gameDAO.getGame(gameID);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new BadRequestException(e.getMessage());
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    public void updateGame(String authToken, GameData gameData) throws UnauthorizedException, BadRequestException {
+    public void updateGame(String authToken, GameData gameData) throws UnauthorizedException, BadRequestException, DataAccessException {
         try {
             authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("No auth found: " + authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         if (gameData == null) {
@@ -56,22 +64,28 @@ public class GameService {
 
         try {
             gameDAO.getGame(gameData.gameID());
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new BadRequestException("Game not found: " + gameData.gameID());
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         try {
             gameDAO.updateGame(gameData);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new BadRequestException(e.getMessage());
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 
-    public int createGame(String authToken, String gameName) throws UnauthorizedException, BadRequestException {
+    public int createGame(String authToken, String gameName) throws UnauthorizedException, BadRequestException, DataAccessException {
         try {
             authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("No auth found: " + authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         Random random = ThreadLocalRandom.current();
@@ -95,26 +109,30 @@ public class GameService {
             game.setBoard(board);
             gameDAO.createGame(new GameData(gameID, null, null, gameName, game));
         } catch (DataAccessException e) {
-            throw new BadRequestException(e.getMessage());
+            throw new DataAccessException(e.getMessage());
         }
 
         return gameID;
     }
 
-    public void joinGame(String authToken, int gameID, String color) throws UnauthorizedException, BadRequestException, ForbiddenException {
+    public void joinGame(String authToken, int gameID, String color) throws UnauthorizedException, BadRequestException, ForbiddenException, DataAccessException {
         AuthData authData;
         GameData gameData;
 
         try {
             authData = authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("No auth found: " + authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         try {
             gameData = gameDAO.getGame(gameID);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new BadRequestException(e.getMessage());
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         String whiteUser = gameData.whiteUsername();
@@ -138,8 +156,10 @@ public class GameService {
 
         try {
             gameDAO.updateGame(new GameData(gameID, whiteUser, blackUser, gameData.gameName(), gameData.game()));
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new BadRequestException(e.getMessage());
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 

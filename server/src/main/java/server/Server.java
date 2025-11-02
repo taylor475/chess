@@ -68,6 +68,9 @@ public class Server {
         javalin.exception(ForbiddenException.class, (e, ctx) -> {
             ctx.status(HttpStatus.FORBIDDEN).result("{ \"message\": \"Error: forbidden\" }");
         });
+        javalin.exception(DataAccessException.class, (e, ctx) -> {
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR).result("{ \"message\": \"Error: data access\" }");
+        });
         javalin.exception(Exception.class, (e, ctx) -> {
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR).result("{ \"message\": \"Error: %s\" }".formatted(e.getMessage()));
         });
