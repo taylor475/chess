@@ -36,10 +36,10 @@ public class MySqlUserDAO implements UserDAO {
     }
 
     @Override
-    public void createUser(UserData user) throws DataAccessException {
+    public void createUser(UserData user) throws DataAccessException, BadRequestException {
         try {
             getUser(user.username());
-            throw new DataAccessException("User already exists: " + user.username());
+            throw new BadRequestException("User already exists: " + user.username());
         }
         // Failure to find the user means the user doesn't exist and can be added
         catch (NotFoundException | DataAccessException e) {

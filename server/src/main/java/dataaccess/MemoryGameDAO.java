@@ -22,13 +22,13 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException {
+    public GameData getGame(int gameID) throws DataAccessException, NotFoundException {
         for (GameData game : db) {
             if (game.gameID() == gameID) {
                 return game;
             }
         }
-        throw new DataAccessException("Game does not exist: " + gameID);
+        throw new NotFoundException("Game does not exist: " + gameID);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class MemoryGameDAO implements GameDAO {
             db.remove(getGame(game.gameID()));
             db.add(game);
         }
-        catch (DataAccessException e) {
+        catch (DataAccessException | NotFoundException e) {
             db.add(game);
         }
     }
