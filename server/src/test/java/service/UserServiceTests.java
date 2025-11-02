@@ -98,6 +98,6 @@ public class UserServiceTests {
         userService.clear();
 
         assertThrows(UnauthorizedException.class, () -> userService.getAuth(auth.authToken()));
-        assertThrows(DataAccessException.class, () -> userDAO.authenticateUser("taylor", "12345"));
+        assertThrows(NotFoundException.class, () -> userDAO.authenticateUser("taylor", "12345"));
     }
 }
