@@ -14,20 +14,22 @@ public class MySqlAuthDAO implements AuthDAO {
     }
 
     @Override
-    public void addAuth(AuthData authData) {
+    public void addAuth(AuthData authData) throws DataAccessException {
         try {
             String statement = "INSERT INTO auth (username, token) VALUES (?, ?)";
             executeUpdate(statement, authData.username(), authData.authToken());
-        } catch (DataAccessException _) {
+        } catch (DataAccessException e) {
+            throw new DataAccessException(String.format("Error adding auth: %s", e));
         }
     }
 
     @Override
-    public void deleteAuth(String authToken) {
+    public void deleteAuth(String authToken) throws DataAccessException {
         try {
             String statement = "DELETE FROM auth WHERE token=?";
             executeUpdate(statement, authToken);
-        } catch (DataAccessException _) {
+        } catch (DataAccessException e) {
+            throw new DataAccessException(String.format("Error deleting auth: %s", e));
         }
     }
 
