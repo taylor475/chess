@@ -15,11 +15,11 @@ public class UserService {
         this.authDAO = authDAO;
     }
 
-    public AuthData createUser(UserData userData) throws BadRequestException {
+    public AuthData createUser(UserData userData) throws BadRequestException, DataAccessException {
         try {
             userDAO.createUser(userData);
         } catch (DataAccessException e) {
-            throw new BadRequestException(e.getMessage());
+            throw new DataAccessException(e.getMessage());
         }
         String authToken = UUID.randomUUID().toString();
         AuthData authData = new AuthData(authToken, userData.username());
@@ -28,12 +28,14 @@ public class UserService {
         return authData;
     }
 
-    public AuthData loginUser(UserData userData) throws UnauthorizedException {
+    public AuthData loginUser(UserData userData) throws UnauthorizedException, DataAccessException {
         boolean userAuthenticated;
         try {
             userAuthenticated = userDAO.authenticateUser(userData.username(), userData.password());
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("User authentication failed: " + userData.username());
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
 
         if (userAuthenticated) {
@@ -46,20 +48,24 @@ public class UserService {
         }
     }
 
-    public void logoutUser(String authToken) throws UnauthorizedException {
+    public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException {
         try {
             authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("No auth found: " + authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
         authDAO.deleteAuth(authToken);
     }
 
-    public AuthData getAuth(String authToken) throws UnauthorizedException {
+    public AuthData getAuth(String authToken) throws UnauthorizedException, DataAccessException {
         try {
             return authDAO.getAuth(authToken);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException e) {
             throw new UnauthorizedException("No auth found: " + authToken);
+        } catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
         }
     }
 

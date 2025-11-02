@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.BadRequestException;
+import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedException;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -32,10 +33,12 @@ public class UserHandler {
         } catch (BadRequestException e) {
             ctx.status(HttpStatus.FORBIDDEN)
                     .json(Map.of("message", "Error: username already in use"));
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void login(Context ctx) throws UnauthorizedException, BadRequestException {
+    public void login(Context ctx) throws UnauthorizedException, BadRequestException, DataAccessException {
         UserData userData = ctx.bodyAsClass(UserData.class);
 
         if (userData == null || userData.username() == null || userData.password() == null) {
@@ -46,7 +49,7 @@ public class UserHandler {
         ctx.status(HttpStatus.OK).json(authData);
     }
 
-    public void logout(Context ctx) throws UnauthorizedException {
+    public void logout(Context ctx) throws UnauthorizedException, DataAccessException {
         String authToken = ctx.header("authorization");
 
         userService.logoutUser(authToken);
