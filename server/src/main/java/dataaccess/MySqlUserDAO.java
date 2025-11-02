@@ -15,7 +15,7 @@ public class MySqlUserDAO implements UserDAO {
     }
 
     @Override
-    public UserData getUser(String username) throws DataAccessException {
+    public UserData getUser(String username) throws DataAccessException, NotFoundException {
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "SELECT username, password, email FROM users WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -29,7 +29,7 @@ public class MySqlUserDAO implements UserDAO {
                     }
                 }
             }
-            throw new DataAccessException(String.format("User does not exist: %s", username));
+            throw new NotFoundException(String.format("User does not exist: %s", username));
         } catch (SQLException e) {
             throw new DataAccessException(String.format("Error getting user: %s", e.getMessage()));
         }
@@ -42,14 +42,14 @@ public class MySqlUserDAO implements UserDAO {
             throw new DataAccessException("User already exists: " + user.username());
         }
         // Failure to find the user means the user doesn't exist and can be added
-        catch (DataAccessException e) {
+        catch (NotFoundException | DataAccessException e) {
             String statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
             executeUpdate(statement, user.username(), hashPassword(user.password()), user.email());
         }
     }
 
     @Override
-    public boolean authenticateUser(String username, String password) throws DataAccessException {
+    public boolean authenticateUser(String username, String password) throws DataAccessException, NotFoundException {
         UserData user = getUser(username);
         return BCrypt.checkpw(password, user.password());
     }

@@ -32,7 +32,7 @@ public class MySqlAuthDAO implements AuthDAO {
     }
 
     @Override
-    public AuthData getAuth(String authToken) throws DataAccessException {
+    public AuthData getAuth(String authToken) throws DataAccessException, NotFoundException {
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "SELECT username, token FROM auth WHERE token=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -45,7 +45,7 @@ public class MySqlAuthDAO implements AuthDAO {
                     }
                 }
             }
-            throw new DataAccessException(String.format("Auth token does not exist: %s", authToken));
+            throw new NotFoundException(String.format("Auth token does not exist: %s", authToken));
         } catch (SQLException e) {
             throw new DataAccessException(String.format("Error getting auth: %s", e));
         }

@@ -49,7 +49,7 @@ public class MySqlGameDAO implements GameDAO {
     }
 
     @Override
-    public GameData getGame(int gameID) throws DataAccessException {
+    public GameData getGame(int gameID) throws DataAccessException, NotFoundException {
         try (Connection conn = DatabaseManager.getConnection()) {
             String statement = "SELECT gameId, whiteUsername, blackUsername, gameName, chessGame FROM game WHERE gameId=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -66,7 +66,7 @@ public class MySqlGameDAO implements GameDAO {
                     }
                 }
             }
-            throw new DataAccessException(String.format("Game does not exist: %s", gameID));
+            throw new NotFoundException(String.format("Game does not exist: %s", gameID));
         } catch (SQLException e) {
             throw new DataAccessException(String.format("Error getting game: %s", e));
         }
@@ -76,7 +76,7 @@ public class MySqlGameDAO implements GameDAO {
     public boolean gameExists(int gameID) {
         try {
             getGame(gameID);
-        } catch (DataAccessException e) {
+        } catch (NotFoundException | DataAccessException e) {
             return false;
         }
         return true;
