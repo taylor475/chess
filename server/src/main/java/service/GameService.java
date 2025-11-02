@@ -115,7 +115,8 @@ public class GameService {
         return gameID;
     }
 
-    public void joinGame(String authToken, int gameID, String color) throws UnauthorizedException, BadRequestException, ForbiddenException, DataAccessException {
+    public void joinGame(String authToken, int gameID, String color)
+            throws UnauthorizedException, BadRequestException, ForbiddenException, DataAccessException {
         AuthData authData;
         GameData gameData;
 
