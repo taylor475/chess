@@ -1,5 +1,7 @@
 package dataaccess;
 
+import dataaccess.exception.DataAccessException;
+import dataaccess.exception.NotFoundException;
 import model.UserData;
 
 public interface UserDAO {

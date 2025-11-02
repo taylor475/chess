@@ -1,5 +1,6 @@
 package dataaccess;
 
+import dataaccess.exception.NotFoundException;
 import model.AuthData;
 
 import java.util.HashSet;

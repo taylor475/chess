@@ -1,6 +1,10 @@
 package server;
 
 import dataaccess.*;
+import dataaccess.exception.BadRequestException;
+import dataaccess.exception.DataAccessException;
+import dataaccess.exception.ForbiddenException;
+import dataaccess.exception.UnauthorizedException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;

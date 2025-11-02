@@ -2,6 +2,9 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.exception.BadRequestException;
+import dataaccess.exception.ForbiddenException;
+import dataaccess.exception.UnauthorizedException;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;

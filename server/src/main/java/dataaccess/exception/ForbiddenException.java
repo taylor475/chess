@@ -1,4 +1,4 @@
-package dataaccess;
+package dataaccess.exception;
 
 /**
  * Indicates the request was forbidden

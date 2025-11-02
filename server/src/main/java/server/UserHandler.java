@@ -1,10 +1,8 @@
 package server;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import dataaccess.BadRequestException;
-import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedException;
+import dataaccess.exception.BadRequestException;
+import dataaccess.exception.DataAccessException;
+import dataaccess.exception.UnauthorizedException;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import model.AuthData;

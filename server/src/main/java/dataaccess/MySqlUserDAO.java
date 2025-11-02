@@ -1,5 +1,8 @@
 package dataaccess;
 
+import dataaccess.exception.BadRequestException;
+import dataaccess.exception.DataAccessException;
+import dataaccess.exception.NotFoundException;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 

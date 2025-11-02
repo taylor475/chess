@@ -1,5 +1,7 @@
 package dataaccess;
 
+import dataaccess.exception.DataAccessException;
+import dataaccess.exception.NotFoundException;
 import model.AuthData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -2,6 +2,8 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.exception.DataAccessException;
+import dataaccess.exception.NotFoundException;
 import model.GameData;
 
 import java.sql.*;

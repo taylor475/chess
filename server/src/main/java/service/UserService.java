@@ -1,6 +1,10 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.exception.BadRequestException;
+import dataaccess.exception.DataAccessException;
+import dataaccess.exception.NotFoundException;
+import dataaccess.exception.UnauthorizedException;
 import model.AuthData;
 import model.UserData;
 

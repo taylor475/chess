@@ -1,4 +1,4 @@
-package dataaccess;
+package dataaccess.exception;
 
 /**
  * Indicates the auth token is invalid
