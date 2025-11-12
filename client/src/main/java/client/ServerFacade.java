@@ -33,4 +33,8 @@ public class ServerFacade {
     public boolean logout() {
         return httpComm.logout();
     }
+
+    public int createGame(String gameName) {
+        return httpComm.createGame(gameName);
+    }
 }

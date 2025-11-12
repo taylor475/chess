@@ -52,6 +52,16 @@ public class HttpCommunicator {
         return true;
     }
 
+    public int createGame(String gameName) {
+        Map<String, String> body = Map.of("gameName", gameName);
+        var jsonBody = new Gson().toJson(body);
+        Map response = request("POST", "/game", jsonBody);
+        if (response.containsKey("Error")) {
+            return -1;
+        }
+        return (int) response.get("gameID");
+    }
+
     private Map request (String method, String endpoint) {
         return request(method, endpoint, null);
     }
