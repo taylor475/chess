@@ -6,6 +6,7 @@ import model.GameData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.MalformedParameterizedTypeException;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -75,6 +76,18 @@ public class HttpCommunicator {
         return parsedGames != null && parsedGames.games() != null ?
                 parsedGames.games()
                 : new HashSet<>(8);
+    }
+
+    public boolean joinGame(int gameId, String playerColor) {
+        Map body;
+        if (playerColor != null) {
+            body = Map.of("gameID", gameId, "playerColor", playerColor);
+        } else {
+            body = Map.of("gameID", gameId);
+        }
+        var jsonBody = new Gson().toJson(body);
+        Map response = request("PUT", "/game", jsonBody);
+        return !response.containsKey("Error");
     }
 
     private Map request (String method, String endpoint) {

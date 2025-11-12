@@ -45,4 +45,8 @@ public class ServerFacade {
     public HashSet<GameData> listGames() {
         return httpComm.listGames();
     }
+
+    public boolean joinGame(int gameId, String playerColor) {
+        return httpComm.joinGame(gameId, playerColor);
+    }
 }
