@@ -1,5 +1,9 @@
 package client;
 
+import model.GameData;
+
+import java.util.HashSet;
+
 public class ServerFacade {
     HttpCommunicator httpComm;
     String serverDomain;
@@ -36,5 +40,9 @@ public class ServerFacade {
 
     public int createGame(String gameName) {
         return httpComm.createGame(gameName);
+    }
+
+    public HashSet<GameData> listGames() {
+        return httpComm.listGames();
     }
 }

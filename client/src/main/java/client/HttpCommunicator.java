@@ -1,14 +1,16 @@
 package client;
 
 import com.google.gson.Gson;
+import model.GameData;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 
@@ -62,6 +64,19 @@ public class HttpCommunicator {
         return (int) response.get("gameID");
     }
 
+    public HashSet<GameData> listGames() {
+        String response = requestString("GET", "/game");
+        if (response.contains("Error")) {
+            return HashSet.newHashSet(8);
+        }
+
+        record ListGamesResponse(HashSet<GameData> games) {}
+        ListGamesResponse parsedGames = new Gson().fromJson(response, ListGamesResponse.class);
+        return parsedGames != null && parsedGames.games() != null ?
+                parsedGames.games()
+                : new HashSet<>(8);
+    }
+
     private Map request (String method, String endpoint) {
         return request(method, endpoint, null);
     }
@@ -86,6 +101,44 @@ public class HttpCommunicator {
         }
 
         return responseMap;
+    }
+
+    private String requestString (String method, String endpoint) {
+        return requestString(method, endpoint, null);
+    }
+
+    private String requestString(String method, String endpoint, String body) {
+        String responseString;
+        try {
+            HttpURLConnection conn = makeConnection(method, endpoint, body);
+            try {
+                if (conn.getResponseCode() == 401) {
+                    return "Error: 401";
+                }
+            } catch (IOException e) {
+                return "Error: 401";
+            }
+            try (InputStream responseBody = conn.getInputStream()) {
+                InputStreamReader inputStreamReader = new InputStreamReader(responseBody);
+                responseString = readerToString(inputStreamReader);
+            }
+        } catch (URISyntaxException | IOException e) {
+            return String.format("Error: %s", e.getMessage());
+        }
+
+        return responseString;
+    }
+
+    private String readerToString(InputStreamReader reader) {
+        StringBuilder builder = new StringBuilder();
+        try {
+            for (int ch; (ch = reader.read()) != -1; ) {
+                builder.append((char) ch);
+            }
+            return builder.toString();
+        } catch (IOException e) {
+            return "";
+        }
     }
 
     private HttpURLConnection makeConnection(String method, String endpoint, String body) throws URISyntaxException, IOException {
