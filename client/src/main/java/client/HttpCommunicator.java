@@ -32,6 +32,17 @@ public class HttpCommunicator {
         return true;
     }
 
+    public boolean login(String username, String password) {
+        Map<String, String> body = Map.of("username", username, "password", password);
+        var jsonBody = new Gson().toJson(body);
+        Map response = request("POST", "/session", jsonBody);
+        if (response.containsKey("Error")) {
+            return false;
+        }
+        facade.setAuthToken((String) response.get("authToken"));
+        return true;
+    }
+
     private Map request (String method, String endpoint) {
         return request(method, endpoint, null);
     }

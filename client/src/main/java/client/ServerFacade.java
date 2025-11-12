@@ -25,4 +25,8 @@ public class ServerFacade {
     public boolean register(String username, String password, String email) {
         return httpComm.register(username, password, email);
     }
+
+    public boolean login(String username, String password) {
+        return httpComm.login(username, password);
+    }
 }
