@@ -29,4 +29,8 @@ public class ServerFacade {
     public boolean login(String username, String password) {
         return httpComm.login(username, password);
     }
+
+    public boolean logout() {
+        return httpComm.logout();
+    }
 }

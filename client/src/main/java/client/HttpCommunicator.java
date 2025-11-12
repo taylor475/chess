@@ -43,6 +43,15 @@ public class HttpCommunicator {
         return true;
     }
 
+    public boolean logout() {
+        Map response = request("DELETE", "/session");
+        if (response.containsKey("Error")) {
+            return false;
+        }
+        facade.setAuthToken(null);
+        return true;
+    }
+
     private Map request (String method, String endpoint) {
         return request(method, endpoint, null);
     }
