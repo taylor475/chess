@@ -21,4 +21,8 @@ public class ServerFacade {
     protected void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
+
+    public boolean register(String username, String password, String email) {
+        return httpComm.register(username, password, email);
+    }
 }
