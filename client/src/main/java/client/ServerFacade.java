@@ -13,4 +13,12 @@ public class ServerFacade {
         this.serverDomain = serverDomain;
         httpComm = new HttpCommunicator(this, serverDomain);
     }
+
+    protected String getAuthToken() {
+        return authToken;
+    }
+
+    protected void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
 }
