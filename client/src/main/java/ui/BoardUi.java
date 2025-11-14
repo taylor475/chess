@@ -55,9 +55,9 @@ public class BoardUi {
 
         output.append("   ");
         if (isBlack) {
-            for (char c = 'h'; c >= 'a'; c--) output.append(' ').append(c).append(' ');
+            for (char c = 'h'; c >= 'a'; c--) output.append(" ").append(c).append(" ");
         } else {
-            for (char c = 'a'; c <= 'h'; c++) output.append(' ').append(c).append(' ');
+            for (char c = 'a'; c <= 'h'; c++) output.append(" ").append(c).append(" ");
         }
         output.append("   ");
 
@@ -119,27 +119,27 @@ public class BoardUi {
                 output.append(SET_TEXT_COLOR_WHITE);
 
                 switch (piece.getPieceType()) {
-                    case KING -> output.append(WHITE_KING);
-                    case QUEEN -> output.append(WHITE_QUEEN);
-                    case BISHOP -> output.append(WHITE_BISHOP);
-                    case KNIGHT -> output.append(WHITE_KNIGHT);
-                    case ROOK -> output.append(WHITE_ROOK);
-                    case PAWN -> output.append(WHITE_PAWN);
+                    case KING -> output.append(" K ");
+                    case QUEEN -> output.append(" Q ");
+                    case BISHOP -> output.append(" B ");
+                    case KNIGHT -> output.append(" N ");
+                    case ROOK -> output.append(" R ");
+                    case PAWN -> output.append(" P ");
                 }
             } else {
                 output.append(SET_TEXT_COLOR_BLACK);
 
                 switch (piece.getPieceType()) {
-                    case KING -> output.append(BLACK_KING);
-                    case QUEEN -> output.append(BLACK_QUEEN);
-                    case BISHOP -> output.append(BLACK_BISHOP);
-                    case KNIGHT -> output.append(BLACK_KNIGHT);
-                    case ROOK -> output.append(BLACK_ROOK);
-                    case PAWN -> output.append(BLACK_PAWN);
+                    case KING -> output.append(" K ");
+                    case QUEEN -> output.append(" Q ");
+                    case BISHOP -> output.append(" B ");
+                    case KNIGHT -> output.append(" N ");
+                    case ROOK -> output.append(" R ");
+                    case PAWN -> output.append(" P ");
                 }
             }
         } else {
-            output.append(EMPTY);
+            output.append("   ");
         }
 
         return output.toString();
