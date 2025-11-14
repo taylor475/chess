@@ -70,7 +70,9 @@ public class PreloginRepl {
         out.print("\n[LOGGED OUT] >>> ");
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine().trim();
-        if (line.isEmpty()) return new String[] {""};
+        if (line.isEmpty()) {
+            return new String[]{""};
+        }
         return line.split("\\s+");
     }
 

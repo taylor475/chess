@@ -53,40 +53,7 @@ public class PostloginRepl {
                     refreshGames();
                     break;
                 case "join":
-                    if (input.length != 3 || !input[1].matches("\\d+") ||
-                            !input[2].toUpperCase().matches("WHITE|BLACK")) {
-                        out.println("Please provide a game ID and color choice.");
-                        printJoinInstr();
-                        break;
-                    }
-
-                    refreshGames();
-                    if (games.isEmpty()) {
-                        out.println("Error: create a game first");
-                        break;
-                    }
-
-                    selection = Integer.parseInt(input[1]);
-                    idx = selection - 1;
-                    if (idx < 0 || idx >= games.size()) {
-                        out.println("Error: Game ID does not exist");
-                        printGames();
-                        break;
-                    }
-
-                    GameData selected = games.get(idx);
-                    ChessGame.TeamColor color = input[2].equalsIgnoreCase("WHITE") ?
-                            ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-
-                    if (server.joinGame(selected.gameID(), input[2].toUpperCase())) {
-                        out.println("You have joined the game.");
-                        inGame = true;
-                        GameplayRepl gameplayRepl = new GameplayRepl(server, selected, color);
-                        gameplayRepl.run();
-                    } else {
-                        out.println("Game does not exist or color is already taken.");
-                        printJoinInstr();
-                    }
+                    joinManager(input);
                     break;
                 case "observe":
                     if (input.length != 2 || !input[1].matches("\\d+")) {
@@ -132,7 +99,9 @@ public class PostloginRepl {
         out.print("\n[LOGGED IN] >>> ");
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine().trim();
-        if (line.isEmpty()) return new String[] {""};
+        if (line.isEmpty()) {
+            return new String[]{""};
+        }
         return line.split("\\s+");
     }
 
@@ -149,6 +118,43 @@ public class PostloginRepl {
             String blackUser = game.blackUsername() != null ? game.blackUsername() : "open";
             out.printf("%d -- Game Name: %s | White User: %s | Black User: %s %n",
                     i + 1, game.gameName(), whiteUser, blackUser);
+        }
+    }
+
+    private void joinManager(String[] input) {
+        if (input.length != 3 || !input[1].matches("\\d+") ||
+                !input[2].toUpperCase().matches("WHITE|BLACK")) {
+            out.println("Please provide a game ID and color choice.");
+            printJoinInstr();
+            return;
+        }
+
+        refreshGames();
+        if (games.isEmpty()) {
+            out.println("Error: create a game first");
+            return;
+        }
+
+        int selection = Integer.parseInt(input[1]);
+        int idx = selection - 1;
+        if (idx < 0 || idx >= games.size()) {
+            out.println("Error: Game ID does not exist");
+            printGames();
+            return;
+        }
+
+        GameData selected = games.get(idx);
+        ChessGame.TeamColor color = input[2].equalsIgnoreCase("WHITE") ?
+                ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
+        if (server.joinGame(selected.gameID(), input[2].toUpperCase())) {
+            out.println("You have joined the game.");
+            inGame = true;
+            GameplayRepl gameplayRepl = new GameplayRepl(server, selected, color);
+            gameplayRepl.run();
+        } else {
+            out.println("Game does not exist or color is already taken.");
+            printJoinInstr();
         }
     }
 

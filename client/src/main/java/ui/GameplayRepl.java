@@ -53,7 +53,9 @@ public class GameplayRepl {
         out.print("\n[IN-GAME] >>> ");
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine().trim();
-        if (line.isEmpty()) return new String[] {""};
+        if (line.isEmpty()) {
+            return new String[]{""};
+        }
         return line.split("\\s+");
     }
 

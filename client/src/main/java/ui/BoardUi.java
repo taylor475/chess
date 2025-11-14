@@ -55,9 +55,13 @@ public class BoardUi {
 
         output.append("   ");
         if (isBlack) {
-            for (char c = 'h'; c >= 'a'; c--) output.append(" ").append(c).append(" ");
+            for (char c = 'h'; c >= 'a'; c--) {
+                output.append(" ").append(c).append(" ");
+            }
         } else {
-            for (char c = 'a'; c <= 'h'; c++) output.append(" ").append(c).append(" ");
+            for (char c = 'a'; c <= 'h'; c++) {
+                output.append(" ").append(c).append(" ");
+            }
         }
         output.append("   ");
 
