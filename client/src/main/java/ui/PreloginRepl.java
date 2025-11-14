@@ -37,13 +37,12 @@ public class PreloginRepl {
                     }
                     if (server.login(input[1], input[2])) {
                         out.println("You are now logged in.");
-                        printLoginInstr();
-                        break;
+                        loggedIn = true;
                     } else {
                         out.println("Username or password incorrect, please try again.");
                         printLoginInstr();
-                        break;
                     }
+                    break;
                 case "register":
                     if (input.length != 4) {
                         out.println("Please provide a username, password, and email.");
@@ -52,13 +51,12 @@ public class PreloginRepl {
                     }
                     if (server.register(input[1], input[2], input[3])) {
                         out.println("You are now registered and logged in.");
-                        printRegisterInstr();
-                        break;
+                        loggedIn = true;
                     } else {
                         out.println("Username already in use, please select a different username.");
                         printRegisterInstr();
-                        break;
                     }
+                    break;
                 default:
                     out.println("Command not recognized, please try again.");
                     printHelpMenu();
