@@ -51,7 +51,9 @@ public class GameplayRepl {
     private String[] getUserInput() {
         out.print("\n[IN-GAME] >>> ");
         Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine().split(" ");
+        String line = scanner.nextLine().trim();
+        if (line.isEmpty()) return new String[] {""};
+        return line.split("\\s+");
     }
 
     private void printHelpMenu() {

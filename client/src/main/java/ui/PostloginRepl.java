@@ -132,7 +132,9 @@ public class PostloginRepl {
     private String[] getUserInput() {
         out.print("\n[LOGGED IN] >>> ");
         Scanner scanner = new Scanner(System.in);
-        return scanner.nextLine().split(" ");
+        String line = scanner.nextLine().trim();
+        if (line.isEmpty()) return new String[] {""};
+        return line.split("\\s+");
     }
 
     private void refreshGames() {
