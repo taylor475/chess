@@ -117,7 +117,6 @@ public class PostloginRepl {
                         printObserveInstr();
                         return;
                     }
-                    break;
                 default:
                     out.println("Command not recognized, please try again.");
                     printHelpMenu();
