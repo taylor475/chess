@@ -4,10 +4,7 @@ import chess.ChessGame;
 import client.ServerFacade;
 import model.GameData;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.lang.System.out;
 import static ui.EscapeSequences.RESET_BG_COLOR;
@@ -26,7 +23,8 @@ public class PostloginRepl {
     public void run() {
         boolean loggedIn = true;
         inGame = false;
-        int gameNum;
+        int selection;
+        int idx;
         out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
         while (loggedIn && !inGame) {
             String[] input = getUserInput();
@@ -55,32 +53,35 @@ public class PostloginRepl {
                     refreshGames();
                     break;
                 case "join":
-                    if (input.length != 3 || input[1].matches("\\d+") || !input[2].toUpperCase().matches("WHITE|BLACK")) {
+                    if (input.length != 3 || input[1].matches("\\d+") ||
+                            !input[2].toUpperCase().matches("WHITE|BLACK")) {
                         out.println("Please provide a game ID and color choice.");
                         printJoinInstr();
                         break;
                     }
-                    gameNum = Integer.parseInt(input[1]);
-                    if (games.isEmpty() || games.size() <= gameNum) {
-                        refreshGames();
-                        if (games.isEmpty()) {
-                            out.println("Error: create a game first");
-                            break;
-                        }
-                        if (games.size() <= gameNum) {
-                            out.println("Error: Game ID does not exist");
-                            printGames();
-                            break;
-                        }
+
+                    refreshGames();
+                    if (games.isEmpty()) {
+                        out.println("Error: create a game first");
+                        break;
                     }
-                    GameData joinGame = games.get(gameNum);
+
+                    selection = Integer.parseInt(input[1]);
+                    idx = selection - 1;
+                    if (idx < 0 || idx >= games.size()) {
+                        out.println("Error: Game ID does not exist");
+                        printGames();
+                        break;
+                    }
+
+                    GameData selected = games.get(idx);
                     ChessGame.TeamColor color = input[2].equalsIgnoreCase("WHITE") ?
-                            ChessGame.TeamColor.WHITE
-                            : ChessGame.TeamColor.BLACK;
-                    if (server.joinGame(joinGame.gameID(), input[2].toUpperCase())) {
+                            ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+
+                    if (server.joinGame(selected.gameID(), input[2].toUpperCase())) {
                         out.println("You have joined the game.");
                         inGame = true;
-                        GameplayRepl gameplayRepl = new GameplayRepl(server, joinGame, color);
+                        GameplayRepl gameplayRepl = new GameplayRepl(server, selected, color);
                         gameplayRepl.run();
                     } else {
                         out.println("Game does not exist or color is already taken.");
@@ -93,31 +94,32 @@ public class PostloginRepl {
                         printObserveInstr();
                         break;
                     }
-                    gameNum = Integer.parseInt(input[1]);
-                    if (games.isEmpty() || games.size() <= gameNum) {
-                        refreshGames();
-                        if (games.isEmpty()) {
-                            out.println("Error: create a game first");
-                            break;
-                        }
-                        if (games.size() <= gameNum) {
-                            out.println("Error: Game ID does not exist");
-                            printGames();
-                            break;
-                        }
+
+                    refreshGames();
+                    if (games.isEmpty()) {
+                        out.println("Error: create a game first");
+                        break;
                     }
-                    GameData observeGame = games.get(gameNum);
+
+                    selection = Integer.parseInt(input[1]);
+                    idx = selection - 1;
+                    if (idx < 0 || idx >= games.size()) {
+                        out.println("Error: Game ID does not exist");
+                        printGames();
+                        break;
+                    }
+
+                    GameData observeGame = games.get(idx);
                     if (server.joinGame(observeGame.gameID(), null)) {
                         out.println("You have joined the game as an observer.");
                         inGame = true;
                         GameplayRepl gameplayRepl = new GameplayRepl(server, observeGame, null);
                         gameplayRepl.run();
-                        break;
                     } else {
                         out.println("Game does not exist.");
                         printObserveInstr();
-                        break;
                     }
+                    break;
                 default:
                     out.println("Command not recognized, please try again.");
                     printHelpMenu();
@@ -139,9 +141,9 @@ public class PostloginRepl {
     }
 
     private void refreshGames() {
-        games = new ArrayList<>();
         HashSet<GameData> gameList = server.listGames();
-        games.addAll(gameList);
+        games = new ArrayList<>(gameList);
+        games.sort(Comparator.comparingInt(GameData::gameID));
     }
 
     private void printGames() {
@@ -149,7 +151,8 @@ public class PostloginRepl {
             GameData game = games.get(i);
             String whiteUser = game.whiteUsername() != null ? game.whiteUsername() : "open";
             String blackUser = game.blackUsername() != null ? game.blackUsername() : "open";
-            out.printf("%d -- Game Name: %s | White User: %s | Black User: %s %n", i, game.gameName(), whiteUser, blackUser);
+            out.printf("%d -- Game Name: %s | White User: %s | Black User: %s %n",
+                    i + 1, game.gameName(), whiteUser, blackUser);
         }
     }
 
@@ -168,10 +171,10 @@ public class PostloginRepl {
     }
 
     private void printJoinInstr() {
-        out.println("join <ID> [WHITE|BLACK] - join a game as color");
+        out.println("join <ID> [WHITE|BLACK] - join a listed game as color");
     }
 
     private void printObserveInstr() {
-        out.println("observe <ID> - observe a game");
+        out.println("observe <ID> - observe a listed game");
     }
 }
