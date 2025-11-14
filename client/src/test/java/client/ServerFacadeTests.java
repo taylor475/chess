@@ -57,13 +57,13 @@ public class ServerFacadeTests {
     // ---------- register ----------
 
     @Test
-    public void register_positive_newUser() {
+    public void registerNewUser() {
         var f = newFacade();
         assertTrue(f.register("taylor", "pass", "taylor@example.com"));
     }
 
     @Test
-    public void register_negative_duplicateUsername() {
+    public void registerDuplicateUsername() {
         var f = newFacade();
         assertTrue(f.register("taylor", "pass", "taylor@example.com"));
         assertFalse(f.register("taylor", "other", "taylor2@example.com"), "Duplicate username should fail");
@@ -72,14 +72,14 @@ public class ServerFacadeTests {
     // ---------- login ----------
 
     @Test
-    public void login_positive_correctCredentials() {
+    public void loginCorrectCredentials() {
         var f = newFacade();
         assertTrue(f.register("taylor", "p@ss", "taylor@example.com"));
         assertTrue(f.login("taylor", "p@ss"));
     }
 
     @Test
-    public void login_negative_wrongPassword() {
+    public void loginWrongPassword() {
         var f = newFacade();
         assertTrue(f.register("taylor", "secret", "taylor@example.com"));
         assertFalse(f.login("taylor", "wrong"), "Login should fail with wrong password");
@@ -88,14 +88,14 @@ public class ServerFacadeTests {
     // ---------- logout ----------
 
     @Test
-    public void logout_positive_whenLoggedIn() {
+    public void logoutWhenLoggedIn() {
         var f = newFacade();
         registerAndLogin(f, "taylor", "pw", "taylor@example.com");
         assertTrue(f.logout());
     }
 
     @Test
-    public void logout_negative_whenNotLoggedIn() {
+    public void logoutWhenNotLoggedIn() {
         var f = newFacade();
         assertFalse(f.logout());
     }
@@ -103,7 +103,7 @@ public class ServerFacadeTests {
     // ---------- createGame ----------
 
     @Test
-    public void createGame_positive_afterLogin() {
+    public void createGameAfterLogin() {
         var f = newFacade();
         registerAndLogin(f, "taylor", "pw", "taylor@example.com");
         int gameId = f.createGame("TaylorGame");
@@ -111,7 +111,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void createGame_negative_withoutLogin() {
+    public void createGameWithoutLogin() {
         var f = newFacade();
         int gameId = f.createGame("NoAuthGame");
         assertEquals(-1, gameId, "createGame should fail without auth");
@@ -120,7 +120,7 @@ public class ServerFacadeTests {
     // ---------- listGames ----------
 
     @Test
-    public void listGames_positive_afterCreating() {
+    public void listGamesAfterCreating() {
         var f = newFacade();
         registerAndLogin(f, "taylor", "pw", "taylor@example.com");
         int id1 = f.createGame("taylor-1");
@@ -136,7 +136,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void listGames_negative_withoutLogin() {
+    public void listGamesWithoutLogin() {
         var f = newFacade();
         HashSet<GameData> games = f.listGames();
         assertNotNull(games);
@@ -146,7 +146,7 @@ public class ServerFacadeTests {
     // ---------- joinGame ----------
 
     @Test
-    public void joinGame_positive_openColor() {
+    public void joinGameOpenColor() {
         var f = newFacade();
         registerAndLogin(f, "taylor", "pw", "taylor@example.com");
         int gameId = f.createGame("TaylorGame");
@@ -156,7 +156,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void joinGame_negative_colorTakenByAnotherUser() {
+    public void joinGameColorTakenByAnotherUser() {
         var f1 = newFacade();
         registerAndLogin(f1, "taylor", "pw", "taylor@example.com");
         int gameId = f1.createGame("TaylorGame");
