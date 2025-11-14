@@ -61,7 +61,8 @@ public class GameHandler {
             throw new BadRequestException("Missing gameID");
         }
 
-        if (color != null && color.isBlank() && !(color.equals("WHITE") || color.equals("BLACK"))) {
+        if (color != null && !color.isBlank() &&
+                !(color.equals("WHITE") || color.equals("BLACK"))) {
             throw new BadRequestException("Invalid color");
         }
 
