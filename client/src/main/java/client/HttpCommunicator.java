@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import model.GameData;
 
 import java.io.IOException;
@@ -79,13 +80,12 @@ public class HttpCommunicator {
     }
 
     public boolean joinGame(int gameId, String playerColor) {
-        Map body;
-        if (playerColor != null) {
-            body = Map.of("gameID", gameId, "playerColor", playerColor);
-        } else {
-            body = Map.of("gameID", gameId);
-        }
-        var jsonBody = new Gson().toJson(body);
+        var gson = new GsonBuilder().serializeNulls().create();
+        Map<String, Object> body = Map.of(
+                "gameID", gameId,
+                "playerColor", playerColor
+        );
+        var jsonBody = gson.toJson(body);
         Map response = request("PUT", "/game", jsonBody);
         return !response.containsKey("Error");
     }
