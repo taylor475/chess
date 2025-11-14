@@ -21,13 +21,9 @@ public class GameHandler {
     public void listGames(Context ctx) throws UnauthorizedException, DataAccessException {
         String authToken = ctx.header("authorization");
 
-        record GameSummary(Integer gameID, String gameName, String whiteUsername, String blackUsername) {}
-        HashSet<GameSummary> games = gameService.listGames(authToken)
-                .stream()
-                .map(g -> new GameSummary(g.gameID(), g.gameName(), g.whiteUsername(), g.blackUsername()))
-                .collect(java.util.stream.Collectors.toCollection(HashSet::new));
+        HashSet<GameData> games = gameService.listGames(authToken);
 
-        record ListGamesResponse(HashSet<GameSummary> games) {}
+        record ListGamesResponse(HashSet<GameData> games) {}
         ctx.status(HttpStatus.OK).json(new ListGamesResponse(games));
     }
 
