@@ -53,7 +53,7 @@ public class PostloginRepl {
                     refreshGames();
                     break;
                 case "join":
-                    if (input.length != 3 || input[1].matches("\\d+") ||
+                    if (input.length != 3 || !input[1].matches("\\d+") ||
                             !input[2].toUpperCase().matches("WHITE|BLACK")) {
                         out.println("Please provide a game ID and color choice.");
                         printJoinInstr();
@@ -89,7 +89,7 @@ public class PostloginRepl {
                     }
                     break;
                 case "observe":
-                    if (input.length != 2 || !input[1].matches("\\d")) {
+                    if (input.length != 2 || !input[1].matches("\\d+")) {
                         out.println("Please provide a game ID");
                         printObserveInstr();
                         break;
