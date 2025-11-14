@@ -110,15 +110,11 @@ public class PostloginRepl {
                     }
 
                     GameData observeGame = games.get(idx);
-                    if (server.joinGame(observeGame.gameID(), null)) {
-                        out.println("You have joined the game as an observer.");
-                        inGame = true;
-                        GameplayRepl gameplayRepl = new GameplayRepl(server, observeGame, null);
-                        gameplayRepl.run();
-                    } else {
-                        out.println("Game does not exist.");
-                        printObserveInstr();
-                    }
+                    out.println("You have joined the game as an observer.");
+                    inGame = true;
+
+                    GameplayRepl gameplayRepl = new GameplayRepl(server, observeGame, null);
+                    gameplayRepl.run();
                     break;
                 default:
                     out.println("Command not recognized, please try again.");

@@ -80,13 +80,11 @@ public class HttpCommunicator {
     }
 
     public boolean joinGame(int gameId, String playerColor) {
-        var gson = new GsonBuilder().serializeNulls().create();
-
-        Map<String, Object> body = new java.util.HashMap<>();
-        body.put("gameID", gameId);
-        body.put("playerColor", playerColor);
-
-        var jsonBody = gson.toJson(body);
+        Map<String, Object> body = Map.of(
+                "gameID", gameId,
+                "playerColor", playerColor
+        );
+        var jsonBody = new Gson().toJson(body);
         Map response = request("PUT", "/game", jsonBody);
         return !response.containsKey("Error");
     }
