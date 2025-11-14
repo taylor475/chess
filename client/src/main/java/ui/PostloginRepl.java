@@ -52,9 +52,10 @@ public class PostloginRepl {
                     }
                     server.createGame(input[1]);
                     out.printf("Created game: %s%n", input[1]);
+                    refreshGames();
                     break;
                 case "join":
-                    if (input.length != 3 || input[1].matches("\\d") || !input[2].toUpperCase().matches("WHITE|BLACK")) {
+                    if (input.length != 3 || input[1].matches("\\d+") || !input[2].toUpperCase().matches("WHITE|BLACK")) {
                         out.println("Please provide a game ID and color choice.");
                         printJoinInstr();
                         break;

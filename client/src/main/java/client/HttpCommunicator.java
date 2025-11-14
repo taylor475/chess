@@ -62,7 +62,7 @@ public class HttpCommunicator {
         if (response.containsKey("Error")) {
             return -1;
         }
-        return (int) response.get("gameID");
+        return ((Double) response.get("gameID")).intValue();
     }
 
     public HashSet<GameData> listGames() {
