@@ -35,21 +35,14 @@ public class BoardUi {
         }
 
         boolean isBlack = color == ChessGame.TeamColor.BLACK;
-        int printCount = color == null ? 2 : 1;
-        for (int j = 0; j < printCount; j++) {
-            output.append(firstRowBuilder(isBlack));
 
-            for (int i = 8; i > 0; i--) {
-                int row = !isBlack ? i : (i * -1) + 9;
-                output.append(buildRow(row, isBlack, selectedPos, possiblePositions));
-            }
-
-            output.append(firstRowBuilder(isBlack));
-            if (j < printCount - 1) {
-                output.append("\n");
-            }
-            isBlack = !isBlack;
+        output.append(firstRowBuilder(isBlack));
+        for (int i = 8; i > 0; i--) {
+            int row = !isBlack ? i : (i * -1) + 9;
+            output.append(buildRow(row, isBlack, selectedPos, possiblePositions));
         }
+        output.append(firstRowBuilder(isBlack));
+
         output.append(RESET_TEXT_BOLD_FAINT);
         out.println(output);
         out.printf("Turn: %s\n", game.getTeamTurn().toString());
@@ -59,7 +52,15 @@ public class BoardUi {
         StringBuilder output = new StringBuilder();
         output.append(SET_BG_COLOR_BLACK);
         output.append(SET_TEXT_COLOR_BLUE);
-        output.append(!isBlack ? "   a b c d e f g h   " : "   h g f e d c b a   ");
+
+        output.append("   ");
+        if (isBlack) {
+            for (char c = 'h'; c >= 'a'; c--) output.append(' ').append(c).append(' ');
+        } else {
+            for (char c = 'a'; c <= 'h'; c++) output.append(' ').append(c).append(' ');
+        }
+        output.append("   ");
+
         output.append(RESET_BG_COLOR);
         output.append(RESET_TEXT_COLOR);
         output.append("\n");
@@ -95,7 +96,7 @@ public class BoardUi {
             return SET_BG_COLOR_YELLOW;
         } else if (Math.ceilMod(row, 2) == 0) {
             if (Math.ceilMod(col, 2) == 0) {
-                return SET_BG_COLOR_RED;
+                return SET_BG_COLOR_DARK_GREY;
             } else {
                 return SET_BG_COLOR_LIGHT_GREY;
             }
@@ -103,7 +104,7 @@ public class BoardUi {
             if (Math.ceilMod(col, 2) == 0) {
                 return SET_BG_COLOR_LIGHT_GREY;
             } else {
-                return SET_BG_COLOR_RED;
+                return SET_BG_COLOR_DARK_GREY;
             }
         }
     }
