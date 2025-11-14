@@ -57,19 +57,19 @@ public class PostloginRepl {
                     if (input.length != 3 || input[1].matches("\\d") || !input[2].toUpperCase().matches("WHITE|BLACK")) {
                         out.println("Please provide a game ID and color choice.");
                         printJoinInstr();
-                        return;
+                        break;
                     }
                     gameNum = Integer.parseInt(input[1]);
                     if (games.isEmpty() || games.size() <= gameNum) {
                         refreshGames();
                         if (games.isEmpty()) {
                             out.println("Error: create a game first");
-                            return;
+                            break;
                         }
                         if (games.size() <= gameNum) {
                             out.println("Error: Game ID does not exist");
                             printGames();
-                            return;
+                            break;
                         }
                     }
                     GameData joinGame = games.get(gameNum);
@@ -90,19 +90,19 @@ public class PostloginRepl {
                     if (input.length != 2 || !input[1].matches("\\d")) {
                         out.println("Please provide a game ID");
                         printObserveInstr();
-                        return;
+                        break;
                     }
                     gameNum = Integer.parseInt(input[1]);
                     if (games.isEmpty() || games.size() <= gameNum) {
                         refreshGames();
                         if (games.isEmpty()) {
                             out.println("Error: create a game first");
-                            return;
+                            break;
                         }
                         if (games.size() <= gameNum) {
                             out.println("Error: Game ID does not exist");
                             printGames();
-                            return;
+                            break;
                         }
                     }
                     GameData observeGame = games.get(gameNum);
@@ -111,11 +111,11 @@ public class PostloginRepl {
                         inGame = true;
                         GameplayRepl gameplayRepl = new GameplayRepl(server, observeGame, null);
                         gameplayRepl.run();
-                        return;
+                        break;
                     } else {
                         out.println("Game does not exist.");
                         printObserveInstr();
-                        return;
+                        break;
                     }
                 default:
                     out.println("Command not recognized, please try again.");
