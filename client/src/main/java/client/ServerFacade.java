@@ -1,8 +1,10 @@
 package client;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.GameData;
-import websocket.commands.UserGameCommand;
+import websocket.commands.*;
 
 import java.util.HashSet;
 
@@ -66,5 +68,25 @@ public class ServerFacade {
     public void sendCommand(UserGameCommand command) {
         String message = new Gson().toJson(command);
         wsComm.sendMessage(message);
+    }
+
+    public void joinPlayer(int gameId, ChessGame.TeamColor color) {
+        sendCommand(new JoinPlayerCommand(authToken, gameId, color));
+    }
+
+    public void joinObserver(int gameId) {
+        sendCommand(new JoinObserverCommand(authToken, gameId));
+    }
+
+    public void makeMove(int gameId, ChessMove move) {
+        sendCommand(new MakeMoveCommand(authToken, gameId, move));
+    }
+
+    public void leave(int gameId) {
+        sendCommand(new LeaveCommand(authToken, gameId));
+    }
+
+    public void resign(int gameId) {
+        sendCommand(new ResignCommand(authToken, gameId));
     }
 }
