@@ -1,11 +1,16 @@
 package client;
 
+import com.google.gson.Gson;
 import model.GameData;
+import websocket.commands.UserGameCommand;
 
 import java.util.HashSet;
 
+import static java.lang.System.out;
+
 public class ServerFacade {
     HttpCommunicator httpComm;
+    WebsocketCommunicator wsComm;
     String serverDomain;
     String authToken;
 
@@ -48,5 +53,18 @@ public class ServerFacade {
 
     public boolean joinGame(int gameId, String playerColor) {
         return httpComm.joinGame(gameId, playerColor);
+    }
+
+    public void connectWebsocket() {
+        try {
+            wsComm = new WebsocketCommunicator(serverDomain);
+        } catch (Exception e) {
+            out.println("Failed to connect websocket with server.");
+        }
+    }
+
+    public void sendCommand(UserGameCommand command) {
+        String message = new Gson().toJson(command);
+        wsComm.sendMessage(message);
     }
 }
