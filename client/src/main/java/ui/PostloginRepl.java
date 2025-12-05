@@ -23,8 +23,6 @@ public class PostloginRepl {
     public void run() {
         boolean loggedIn = true;
         inGame = false;
-        int selection;
-        int idx;
         out.print(RESET_TEXT_COLOR + RESET_BG_COLOR);
         while (loggedIn && !inGame) {
             String[] input = getUserInput();
@@ -56,32 +54,7 @@ public class PostloginRepl {
                     joinManager(input);
                     break;
                 case "observe":
-                    if (input.length != 2 || !input[1].matches("\\d+")) {
-                        out.println("Please provide a game ID");
-                        printObserveInstr();
-                        break;
-                    }
-
-                    refreshGames();
-                    if (games.isEmpty()) {
-                        out.println("Error: create a game first");
-                        break;
-                    }
-
-                    selection = Integer.parseInt(input[1]);
-                    idx = selection - 1;
-                    if (idx < 0 || idx >= games.size()) {
-                        out.println("Error: Game ID does not exist");
-                        printGames();
-                        break;
-                    }
-
-                    GameData observeGame = games.get(idx);
-                    out.println("You have joined the game as an observer.");
-                    inGame = true;
-
-                    GameplayRepl gameplayRepl = new GameplayRepl(server, observeGame, null);
-                    gameplayRepl.run();
+                    observeManager(input);
                     break;
                 default:
                     out.println("Command not recognized, please try again.");
@@ -150,11 +123,48 @@ public class PostloginRepl {
         if (server.joinGame(selected.gameID(), input[2].toUpperCase())) {
             out.println("You have joined the game.");
             inGame = true;
+            server.connectWebsocket();
+            server.joinPlayer(selected.gameID(), color);
             GameplayRepl gameplayRepl = new GameplayRepl(server, selected, color);
             gameplayRepl.run();
         } else {
             out.println("Game does not exist or color is already taken.");
             printJoinInstr();
+        }
+    }
+
+    private void observeManager(String[] input) {
+        if (input.length != 2 || !input[1].matches("\\d+")) {
+            out.println("Please provide a game ID");
+            printObserveInstr();
+            return;
+        }
+
+        refreshGames();
+        if (games.isEmpty()) {
+            out.println("Error: create a game first");
+            return;
+        }
+
+        int selection = Integer.parseInt(input[1]);
+        int idx = selection - 1;
+        if (idx < 0 || idx >= games.size()) {
+            out.println("Error: Game ID does not exist");
+            printGames();
+            return;
+        }
+
+        GameData observeGame = games.get(idx);
+        if (server.joinGame(observeGame.gameID(), null)) {
+            out.println("You have joined the game as an observer.");
+            inGame = true;
+            server.connectWebsocket();
+            server.joinObserver(observeGame.gameID());
+            GameplayRepl gameplayRepl = new GameplayRepl(server, observeGame, null);
+            gameplayRepl.run();
+        } else {
+            out.println("Game does not exist");
+            printObserveInstr();
         }
     }
 
