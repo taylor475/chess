@@ -46,7 +46,7 @@ public class WebsocketCommunicator extends Endpoint {
             printNotification(notification.getMessage());
         } else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
             ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
-            printNotification(error.getMessage());
+            printNotification(error.getErrorMessage());
         } else if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
             LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
             printLoadedGame(loadGame.getGame());

@@ -274,7 +274,7 @@ public class WebsocketHandler {
             if (!Objects.equals(otherGame, gameId)) {
                 continue; // different game
             }
-            if (!toSelf && otherCtx == ctx) {
+            if (!toSelf && Objects.equals(otherCtx, ctx)) {
                 continue; // skip the root client if toSelf == false
             }
 
