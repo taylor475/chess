@@ -9,7 +9,7 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.json.JavalinGson;
-import org.eclipse.jetty.websocket.api.Session;
+import io.javalin.websocket.WsContext;
 import service.GameService;
 import service.UserService;
 
@@ -25,7 +25,7 @@ public class Server {
     private final UserHandler userHandler;
     private final GameHandler gameHandler;
 
-    static ConcurrentHashMap<Session, Integer> gameSessions = new ConcurrentHashMap<>();
+    static ConcurrentHashMap<WsContext, Integer> gameSessions = new ConcurrentHashMap<>();
 
     public Server() {
         try {
@@ -61,6 +61,21 @@ public class Server {
         javalin.get("/game", gameHandler::listGames);
         javalin.post("/game", gameHandler::createGame);
         javalin.put("/game", gameHandler::joinGame);
+
+        // Websocket endpoint
+        WebsocketHandler wsHandler = new WebsocketHandler();
+
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(wsHandler::onConnect);
+            ws.onClose(ctx -> wsHandler.onClose(ctx, ctx.status(), ctx.reason()));
+            ws.onMessage(ctx -> {
+                try {
+                    wsHandler.onMessage(ctx, ctx.message());
+                } catch (Exception e) {
+                    ctx.send("{\"message\":\"Error: internal server error\"}");
+                }
+            });
+        });
 
         // Exception handlers
         javalin.exception(BadRequestException.class, (e, ctx) -> {
