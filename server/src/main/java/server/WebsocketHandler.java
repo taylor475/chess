@@ -36,23 +36,59 @@ public class WebsocketHandler {
     public void onMessage(WsContext ctx, String message) throws Exception {
         out.printf("Received: %s\n", message);
 
-        if (message.contains("\"commandType\":\"JOIN_PLAYER\"")) {
-            JoinPlayerCommand command = new Gson().fromJson(message, JoinPlayerCommand.class);
-            gameSessions.replace(ctx, command.getGameID());
-            handleJoinPlayer(ctx, command);
-        } else if (message.contains("\"commandType\":\"JOIN_OBSERVER\"")) {
-            JoinObserverCommand command = new Gson().fromJson(message, JoinObserverCommand.class);
-            gameSessions.replace(ctx, command.getGameID());
-            handleJoinObserver(ctx, command);
-        } else if (message.contains("\"commandType\":\"MAKE_MOVE\"")) {
-            MakeMoveCommand command = new Gson().fromJson(message, MakeMoveCommand.class);
-            handleMakeMove(ctx, command);
-        } else if (message.contains("\"commandType\":\"LEAVE\"")) {
-            LeaveCommand command = new Gson().fromJson(message, LeaveCommand.class);
-            handleLeave(ctx, command);
-        } else if (message.contains("\"commandType\":\"RESIGN\"")) {
-            ResignCommand command = new Gson().fromJson(message, ResignCommand.class);
-            handleResign(ctx, command);
+        UserGameCommand base = gson.fromJson(message, UserGameCommand.class);
+        switch (base.getCommandType()) {
+            case CONNECT -> {
+                ConnectCommand command = gson.fromJson(message, ConnectCommand.class);
+                gameSessions.put(ctx, command.getGameID());
+                handleConnect(ctx, command);
+            }
+            case JOIN_PLAYER -> {
+                JoinPlayerCommand command = gson.fromJson(message, JoinPlayerCommand.class);
+                gameSessions.put(ctx, command.getGameID());
+                handleJoinPlayer(ctx, command);
+            }
+            case JOIN_OBSERVER -> {
+                JoinObserverCommand command = gson.fromJson(message, JoinObserverCommand.class);
+                gameSessions.put(ctx, command.getGameID());
+                handleJoinObserver(ctx, command);
+            }
+            case MAKE_MOVE -> {
+                MakeMoveCommand command = gson.fromJson(message, MakeMoveCommand.class);
+                handleMakeMove(ctx, command);
+            }
+            case LEAVE -> {
+                LeaveCommand command = gson.fromJson(message, LeaveCommand.class);
+                handleLeave(ctx, command);
+            }
+            case RESIGN -> {
+                ResignCommand command = gson.fromJson(message, ResignCommand.class);
+                handleResign(ctx, command);
+            }
+        }
+    }
+
+    private void handleConnect(WsContext ctx, ConnectCommand command) throws IOException {
+        try {
+            AuthData auth = Server.userService.getAuth(command.getAuthToken());
+            GameData game = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
+
+            if (Objects.equals(game.whiteUsername(), auth.username())) {
+                JoinPlayerCommand joinWhite = new JoinPlayerCommand(command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.WHITE);
+                handleJoinPlayer(ctx, joinWhite);
+            } else if (Objects.equals(game.blackUsername(), auth.username())) {
+                JoinPlayerCommand joinBlack = new JoinPlayerCommand(command.getAuthToken(), command.getGameID(), ChessGame.TeamColor.BLACK);
+                handleJoinPlayer(ctx, joinBlack);
+            } else {
+                JoinObserverCommand joinObserver = new JoinObserverCommand(command.getAuthToken(), command.getGameID());
+                handleJoinObserver(ctx, joinObserver);
+            }
+        } catch (UnauthorizedException e) {
+            sendError(ctx, new Error("Error: Unauthorized"));
+        } catch (BadRequestException e) {
+            sendError(ctx, new Error("Error: Invalid game"));
+        } catch (DataAccessException e) {
+            sendError(ctx, new Error("Error: Database failure"));
         }
     }
 
