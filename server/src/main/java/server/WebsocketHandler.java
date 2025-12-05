@@ -10,6 +10,7 @@ import io.javalin.websocket.WsContext;
 import model.AuthData;
 import model.GameData;
 import websocket.commands.*;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
@@ -84,11 +85,11 @@ public class WebsocketHandler {
                 handleJoinObserver(ctx, joinObserver);
             }
         } catch (UnauthorizedException e) {
-            sendError(ctx, new Error("Error: Unauthorized"));
+            sendError(ctx, new ErrorMessage("Error: Unauthorized"));
         } catch (BadRequestException e) {
-            sendError(ctx, new Error("Error: Invalid game"));
+            sendError(ctx, new ErrorMessage("Error: Invalid game"));
         } catch (DataAccessException e) {
-            sendError(ctx, new Error("Error: Database failure"));
+            sendError(ctx, new ErrorMessage("Error: Database failure"));
         }
     }
 
@@ -109,7 +110,7 @@ public class WebsocketHandler {
             }
 
             if (!correctColor) {
-                Error error = new Error("Error: attempting to joing with wrong color");
+                ErrorMessage error = new ErrorMessage("Error: attempting to joing with wrong color");
                 sendError(ctx, error);
                 return;
             }
@@ -120,11 +121,11 @@ public class WebsocketHandler {
             LoadGameMessage load = new LoadGameMessage(game.game());
             sendMessage(ctx, load);
         } catch (UnauthorizedException e) {
-            sendError(ctx, new Error("Error: Unauthorized"));
+            sendError(ctx, new ErrorMessage("Error: Unauthorized"));
         } catch (BadRequestException e) {
-            sendError(ctx, new Error("Error: Invalid game"));
+            sendError(ctx, new ErrorMessage("Error: Invalid game"));
         } catch (DataAccessException e) {
-            sendError(ctx, new Error("Error: Database failure"));
+            sendError(ctx, new ErrorMessage("Error: Database failure"));
         }
     }
 
@@ -139,11 +140,11 @@ public class WebsocketHandler {
             LoadGameMessage load = new LoadGameMessage(game.game());
             sendMessage(ctx, load);
         } catch (UnauthorizedException e) {
-            sendError(ctx, new Error("Error: Unauthorized"));
+            sendError(ctx, new ErrorMessage("Error: Unauthorized"));
         } catch (BadRequestException e) {
-            sendError(ctx, new Error("Error: Invalid game"));
+            sendError(ctx, new ErrorMessage("Error: Invalid game"));
         } catch (DataAccessException e) {
-            sendError(ctx, new Error("Error: Database failure"));
+            sendError(ctx, new ErrorMessage("Error: Database failure"));
         }
     }
 
@@ -154,12 +155,12 @@ public class WebsocketHandler {
 
             ChessGame.TeamColor userColor = getTeamColor(auth.username(), game);
             if (userColor == null) {
-                sendError(ctx, new Error("Error: Observers can't make moves"));
+                sendError(ctx, new ErrorMessage("Error: Observers can't make moves"));
                 return;
             }
 
             if (game.game().getGameOver()) {
-                sendError(ctx, new Error("Error: Game has concluded"));
+                sendError(ctx, new ErrorMessage("Error: Game has concluded"));
                 return;
             }
 
@@ -189,16 +190,16 @@ public class WebsocketHandler {
                 LoadGameMessage load = new LoadGameMessage(game.game());
                 broadcastMessage(ctx, load, true);
             } else {
-                sendError(ctx, new Error("Error: it is not your turn"));
+                sendError(ctx, new ErrorMessage("Error: it is not your turn"));
             }
         } catch (UnauthorizedException e) {
-            sendError(ctx, new Error("Error: Unauthorized"));
+            sendError(ctx, new ErrorMessage("Error: Unauthorized"));
         } catch (BadRequestException e) {
-            sendError(ctx, new Error("Error: Invalid game"));
+            sendError(ctx, new ErrorMessage("Error: Invalid game"));
         } catch (DataAccessException e) {
-            sendError(ctx, new Error("Error: Database failure"));
+            sendError(ctx, new ErrorMessage("Error: Database failure"));
         } catch (InvalidMoveException e) {
-            sendError(ctx, new Error("Error: Invalid move"));
+            sendError(ctx, new ErrorMessage("Error: Invalid move"));
         }
     }
 
@@ -211,9 +212,9 @@ public class WebsocketHandler {
 
             ctx.session.close();
         } catch (UnauthorizedException e) {
-            sendError(ctx, new Error("Error: Unauthorized"));
+            sendError(ctx, new ErrorMessage("Error: Unauthorized"));
         } catch (DataAccessException e) {
-            sendError(ctx, new Error("Error: Database failure"));
+            sendError(ctx, new ErrorMessage("Error: Database failure"));
         }
     }
 
@@ -228,12 +229,12 @@ public class WebsocketHandler {
                     : game.whiteUsername();
 
             if (userColor == null) {
-                sendError(ctx, new Error("Error: Observers can't resign"));
+                sendError(ctx, new ErrorMessage("Error: Observers can't resign"));
                 return;
             }
 
             if (game.game().getGameOver()) {
-                sendError(ctx, new Error("Error: The game has already concluded"));
+                sendError(ctx, new ErrorMessage("Error: The game has already concluded"));
                 return;
             }
 
@@ -243,29 +244,41 @@ public class WebsocketHandler {
             NotificationMessage notif = new NotificationMessage("%s has forfeited, %s wins!".formatted(auth.username(), opponentUsername));
             broadcastMessage(ctx, notif, true);
         } catch (UnauthorizedException e) {
-            sendError(ctx, new Error("Error: Unauthorized"));
+            sendError(ctx, new ErrorMessage("Error: Unauthorized"));
         } catch (BadRequestException e) {
-            sendError(ctx, new Error("Error: Invalid game"));
+            sendError(ctx, new ErrorMessage("Error: Invalid game"));
         } catch (DataAccessException e) {
-            sendError(ctx, new Error("Error: Database failure"));
+            sendError(ctx, new ErrorMessage("Error: Database failure"));
         }
     }
 
     // Broadcast notification to all clients on the game except the current session
-    public void broadcastMessage(WsContext currCtx, ServerMessage message) throws IOException {
-        broadcastMessage(currCtx, message, false);
+    public void broadcastMessage(WsContext ctx, ServerMessage message) throws IOException {
+        broadcastMessage(ctx, message, false);
     }
 
     // Broadcast notification to all clients on the game
-    public void broadcastMessage(WsContext currCtx, ServerMessage message, boolean toSelf) throws IOException {
-        out.printf("Broadcasting (toSelf: %s): %s%n", toSelf, new Gson().toJson(message));
-        for (WsContext ctx : gameSessions.keySet()) {
-            boolean inGame = gameSessions.get(ctx) != 0;
-            boolean sameGame = gameSessions.get(ctx).equals(gameSessions.get(currCtx));
-            boolean isSelf = ctx == currCtx;
-            if ((toSelf || !isSelf) && inGame && sameGame) {
-                sendMessage(ctx, message);
+    public void broadcastMessage(WsContext ctx, ServerMessage message, boolean toSelf) throws IOException {
+        Integer gameId = gameSessions.get(ctx);
+        if (gameId == null) {
+            return;
+        }
+
+        String json = gson.toJson(message);
+        out.printf("Broadcasting (toSelf: %b): %s%n", toSelf, json);
+
+        for (var entry : gameSessions.entrySet()) {
+            WsContext otherCtx = entry.getKey();
+            Integer otherGame = entry.getValue();
+
+            if (!Objects.equals(otherGame, gameId)) {
+                continue; // different game
             }
+            if (!toSelf && otherCtx == ctx) {
+                continue; // skip the root client if toSelf == false
+            }
+
+            otherCtx.send(json);
         }
     }
 
@@ -273,7 +286,7 @@ public class WebsocketHandler {
         ctx.send(gson.toJson(message));
     }
 
-    public void sendError(WsContext ctx, Error error) throws IOException {
+    public void sendError(WsContext ctx, ErrorMessage error) throws IOException {
         out.printf("Error: %s%n", new Gson().toJson(error));
         ctx.send(gson.toJson(error));
     }
