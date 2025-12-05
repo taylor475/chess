@@ -28,6 +28,7 @@ public class WebsocketHandler {
     private static final Gson GSON = new Gson();
 
     public void onConnect(WsContext ctx) {
+        ctx.enableAutomaticPings();
         GAME_SESSIONS.put(ctx, 0);
     }
 
