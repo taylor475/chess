@@ -4,9 +4,11 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
 import ui.GameplayRepl;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.net.URI;
@@ -41,15 +43,20 @@ public class WebsocketCommunicator extends Endpoint {
     }
 
     private void handleMessage(String message) {
-        if (message.contains("\"serverMessageType\":\"NOTIFICATION\"")) {
-            NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
-            printNotification(notification.getMessage());
-        } else if (message.contains("\"serverMessageType\":\"ERROR\"")) {
-            ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
-            printNotification(error.getErrorMessage());
-        } else if (message.contains("\"serverMessageType\":\"LOAD_GAME\"")) {
-            LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
-            printLoadedGame(loadGame.getGame());
+        ServerMessage base = new Gson().fromJson(message, ServerMessage.class);
+        switch (base.getServerMessageType()) {
+            case NOTIFICATION -> {
+                NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
+                printNotification(notification.getMessage());
+            }
+            case ERROR -> {
+                ErrorMessage error = new Gson().fromJson(message, ErrorMessage.class);
+                printNotification(error.getErrorMessage());
+            }
+            case LOAD_GAME -> {
+                LoadGameMessage loadGame = new Gson().fromJson(message, LoadGameMessage.class);
+                printLoadedGame(loadGame.getGame());
+            }
         }
     }
 
