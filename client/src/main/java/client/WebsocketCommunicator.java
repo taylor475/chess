@@ -4,7 +4,6 @@ import chess.ChessGame;
 import com.google.gson.Gson;
 import jakarta.websocket.*;
 import ui.GameplayRepl;
-import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -22,7 +21,7 @@ public class WebsocketCommunicator extends Endpoint {
 
     public WebsocketCommunicator(String serverDomain) throws Exception {
         try {
-            URI uri = new URI("ws://" + serverDomain + "/connect");
+            URI uri = new URI("ws://" + serverDomain + "/ws");
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, uri);
