@@ -70,6 +70,10 @@ public class ServerFacade {
         wsComm.sendMessage(message);
     }
 
+    public void connect(int gameId) {
+        sendCommand(new ConnectCommand(authToken, gameId));
+    }
+
     public void joinPlayer(int gameId, ChessGame.TeamColor color) {
         sendCommand(new JoinPlayerCommand(authToken, gameId, color));
     }
