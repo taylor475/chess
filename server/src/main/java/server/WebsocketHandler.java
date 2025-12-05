@@ -176,6 +176,9 @@ public class WebsocketHandler {
                 ChessGame.TeamColor opponentColor = userColor == ChessGame.TeamColor.WHITE
                         ? ChessGame.TeamColor.BLACK
                         : ChessGame.TeamColor.WHITE;
+                String opponentUsername = userColor == ChessGame.TeamColor.WHITE
+                        ? game.blackUsername()
+                        : game.whiteUsername();
 
                 ChessMove move = command.getMove();
                 String from = posToString(move.getStartPosition().getRow(), move.getStartPosition().getColumn());
@@ -183,25 +186,27 @@ public class WebsocketHandler {
                 String coordText = " (" + from + " → " + to + ")";
 
                 if (game.game().isInCheckmate(opponentColor)) {
-                    notif = new NotificationMessage("Checkmate! %s wins!%s".formatted(auth.username(), coordText));
+                    notif = new NotificationMessage("%s is in checkmate! %s wins!".formatted(opponentUsername,
+                            auth.username())
+                    );
+                    broadcastMessage(ctx, notif, true);
                     game.game().setGameOver(true);
                 } else if (game.game().isInStalemate(opponentColor)) {
                     notif = new NotificationMessage(
-                            "Stalemate caused by %s. It's a tie!%s".formatted(auth.username(),
-                                    coordText)
-                    );
+                            "Stalemate caused by %s. It's a tie!".formatted(auth.username()));
+                    broadcastMessage(ctx, notif, true);
                     game.game().setGameOver(true);
                 } else if (game.game().isInCheck(opponentColor)) {
                     notif = new NotificationMessage(
-                            "A move has been made by %s, %s is now in check!%s".formatted(auth.username(),
-                                    opponentColor.toString(), coordText)
+                            "A move has been made by %s, %s is now in check!".formatted(auth.username(),
+                                    opponentUsername)
                     );
-                } else {
-                    notif = new NotificationMessage("A move has been made by %s%s".formatted(auth.username(),
-                            coordText)
-                    );
+                    broadcastMessage(ctx, notif, true);
                 }
-                broadcastMessage(ctx, notif);
+                NotificationMessage mvNotif = new NotificationMessage("A move has been made by %s%s".formatted(
+                        auth.username(), coordText)
+                );
+                broadcastMessage(ctx, mvNotif);
 
                 Server.gameService.updateGame(auth.authToken(), game);
 
