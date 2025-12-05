@@ -71,7 +71,15 @@ public class WebsocketCommunicator extends Endpoint {
         out.print("[IN-GAME] >>> ");
     }
 
+    public boolean isOpen() {
+        return session != null && session.isOpen();
+    }
+
     public void sendMessage(String message) {
+        if (!isOpen()) {
+            out.println("Websocket is closed, cannot send command.");
+            return;
+        }
         this.session.getAsyncRemote().sendText(message);
     }
 }

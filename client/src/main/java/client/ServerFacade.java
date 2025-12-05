@@ -68,7 +68,7 @@ public class ServerFacade {
     }
 
     public void sendCommand(UserGameCommand command) {
-        if (wsComm == null) {
+        if (wsComm == null || !wsComm.isOpen()) {
             out.println("Websocket is not connected, cannot send command.");
             return;
         }
