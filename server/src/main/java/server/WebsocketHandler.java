@@ -23,47 +23,47 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.lang.System.out;
 
 public class WebsocketHandler {
-    public static final Map<WsContext, Integer> gameSessions = new ConcurrentHashMap<>();
-    private static final Gson gson = new Gson();
+    public static final Map<WsContext, Integer> GAME_SESSIONS = new ConcurrentHashMap<>();
+    private static final Gson GSON = new Gson();
 
     public void onConnect(WsContext ctx) {
-        gameSessions.put(ctx, 0);
+        GAME_SESSIONS.put(ctx, 0);
     }
 
     public void onClose(WsContext ctx, int statusCode, String reason) {
-        gameSessions.remove(ctx);
+        GAME_SESSIONS.remove(ctx);
     }
 
     public void onMessage(WsContext ctx, String message) throws Exception {
         out.printf("Received: %s\n", message);
 
-        UserGameCommand base = gson.fromJson(message, UserGameCommand.class);
+        UserGameCommand base = GSON.fromJson(message, UserGameCommand.class);
         switch (base.getCommandType()) {
             case CONNECT -> {
-                ConnectCommand command = gson.fromJson(message, ConnectCommand.class);
-                gameSessions.put(ctx, command.getGameID());
+                ConnectCommand command = GSON.fromJson(message, ConnectCommand.class);
+                GAME_SESSIONS.put(ctx, command.getGameID());
                 handleConnect(ctx, command);
             }
             case JOIN_PLAYER -> {
-                JoinPlayerCommand command = gson.fromJson(message, JoinPlayerCommand.class);
-                gameSessions.put(ctx, command.getGameID());
+                JoinPlayerCommand command = GSON.fromJson(message, JoinPlayerCommand.class);
+                GAME_SESSIONS.put(ctx, command.getGameID());
                 handleJoinPlayer(ctx, command);
             }
             case JOIN_OBSERVER -> {
-                JoinObserverCommand command = gson.fromJson(message, JoinObserverCommand.class);
-                gameSessions.put(ctx, command.getGameID());
+                JoinObserverCommand command = GSON.fromJson(message, JoinObserverCommand.class);
+                GAME_SESSIONS.put(ctx, command.getGameID());
                 handleJoinObserver(ctx, command);
             }
             case MAKE_MOVE -> {
-                MakeMoveCommand command = gson.fromJson(message, MakeMoveCommand.class);
+                MakeMoveCommand command = GSON.fromJson(message, MakeMoveCommand.class);
                 handleMakeMove(ctx, command);
             }
             case LEAVE -> {
-                LeaveCommand command = gson.fromJson(message, LeaveCommand.class);
+                LeaveCommand command = GSON.fromJson(message, LeaveCommand.class);
                 handleLeave(ctx, command);
             }
             case RESIGN -> {
-                ResignCommand command = gson.fromJson(message, ResignCommand.class);
+                ResignCommand command = GSON.fromJson(message, ResignCommand.class);
                 handleResign(ctx, command);
             }
         }
@@ -115,7 +115,10 @@ public class WebsocketHandler {
                 return;
             }
 
-            NotificationMessage notif = new NotificationMessage("%s has joined the game as %s".formatted(auth.username(), command.getPlayerColor().toString()));
+            NotificationMessage notif = new NotificationMessage(
+                    "%s has joined the game as %s".formatted(auth.username(),
+                            command.getPlayerColor().toString())
+            );
             broadcastMessage(ctx, notif);
 
             LoadGameMessage load = new LoadGameMessage(game.game());
@@ -179,7 +182,10 @@ public class WebsocketHandler {
                     notif = new NotificationMessage("Stalemate caused by %s. It's a tie!".formatted(auth.username()));
                     game.game().setGameOver(true);
                 } else if (game.game().isInCheck(opponentColor)) {
-                    notif = new NotificationMessage("A move has been made by %s, %s is now in check!".formatted(auth.username(), opponentColor.toString()));
+                    notif = new NotificationMessage(
+                            "A move has been made by %s, %s is now in check!".formatted(auth.username(),
+                                    opponentColor.toString())
+                    );
                 } else {
                     notif = new NotificationMessage("A move has been made by %s".formatted(auth.username()));
                 }
@@ -286,15 +292,15 @@ public class WebsocketHandler {
 
     // Broadcast notification to all clients on the game
     public void broadcastMessage(WsContext ctx, ServerMessage message, boolean toSelf) throws IOException {
-        Integer gameId = gameSessions.get(ctx);
+        Integer gameId = GAME_SESSIONS.get(ctx);
         if (gameId == null) {
             return;
         }
 
-        String json = gson.toJson(message);
+        String json = GSON.toJson(message);
         out.printf("Broadcasting (toSelf: %b): %s%n", toSelf, json);
 
-        for (var entry : gameSessions.entrySet()) {
+        for (var entry : GAME_SESSIONS.entrySet()) {
             WsContext otherCtx = entry.getKey();
             Integer otherGame = entry.getValue();
 
@@ -310,12 +316,12 @@ public class WebsocketHandler {
     }
 
     public void sendMessage(WsContext ctx, ServerMessage message) throws IOException {
-        ctx.send(gson.toJson(message));
+        ctx.send(GSON.toJson(message));
     }
 
     public void sendError(WsContext ctx, ErrorMessage error) throws IOException {
         out.printf("Error: %s%n", new Gson().toJson(error));
-        ctx.send(gson.toJson(error));
+        ctx.send(GSON.toJson(error));
     }
 
     private ChessGame.TeamColor getTeamColor(String username, GameData game) {
