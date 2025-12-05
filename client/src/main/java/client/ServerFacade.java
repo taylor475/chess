@@ -57,11 +57,13 @@ public class ServerFacade {
         return httpComm.joinGame(gameId, playerColor);
     }
 
-    public void connectWebsocket() {
+    public boolean connectWebsocket() {
         try {
             wsComm = new WebsocketCommunicator(serverDomain);
+            return true;
         } catch (Exception e) {
             out.println("Failed to connect websocket with server.");
+            return false;
         }
     }
 

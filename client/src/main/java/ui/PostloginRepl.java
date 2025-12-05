@@ -155,17 +155,19 @@ public class PostloginRepl {
         }
 
         GameData observeGame = games.get(idx);
-        if (server.joinGame(observeGame.gameID(), null)) {
-            out.println("You have joined the game as an observer.");
-            inGame = true;
-            server.connectWebsocket();
-            server.joinObserver(observeGame.gameID());
-            GameplayRepl gameplayRepl = new GameplayRepl(server, observeGame, null);
-            gameplayRepl.run();
-        } else {
-            out.println("Game does not exist");
-            printObserveInstr();
+
+        out.println("You have joined the game as an observer.");
+        inGame = true;
+
+        if (!server.connectWebsocket()) {
+            out.println("Unable to observe without a websocket connection.");
+            inGame = false;
+            return;
         }
+
+        server.joinObserver(observeGame.gameID());
+        GameplayRepl gameplayRepl = new GameplayRepl(server, observeGame, null);
+        gameplayRepl.run();
     }
 
     private void printHelpMenu() {
