@@ -206,6 +206,33 @@ public class WebsocketHandler {
     private void handleLeave(WsContext ctx, LeaveCommand command) throws IOException {
         try {
             AuthData auth = Server.userService.getAuth(command.getAuthToken());
+            GameData game = Server.gameService.getGameData(command.getAuthToken(), command.getGameID());
+            ChessGame.TeamColor userColor = getTeamColor(auth.username(), game);
+
+            GameData updatedGame = game;
+            if (userColor == ChessGame.TeamColor.WHITE) {
+                updatedGame = new GameData(
+                        game.gameID(),
+                        null,
+                        game.blackUsername(),
+                        game.gameName(),
+                        game.game()
+                );
+            } else if (userColor == ChessGame.TeamColor.BLACK) {
+                updatedGame = new GameData(
+                        game.gameID(),
+                        game.whiteUsername(),
+                        null,
+                        game.gameName(),
+                        game.game()
+                );
+            } else {
+                // observers don't affect the database
+            }
+
+            if (updatedGame != game) {
+                Server.gameService.updateGame(auth.authToken(), updatedGame);
+            }
 
             NotificationMessage notif = new NotificationMessage("%s has left the game".formatted(auth.username()));
             broadcastMessage(ctx, notif);
