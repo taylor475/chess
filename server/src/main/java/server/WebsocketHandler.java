@@ -1,6 +1,7 @@
 package server;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.exception.BadRequestException;
@@ -175,19 +176,29 @@ public class WebsocketHandler {
                         ? ChessGame.TeamColor.BLACK
                         : ChessGame.TeamColor.WHITE;
 
+                ChessMove move = command.getMove();
+                String from = posToString(move.getStartPosition().getRow(), move.getStartPosition().getColumn());
+                String to = posToString(move.getEndPosition().getRow(), move.getEndPosition().getColumn());
+                String coordText = " (" + from + " → " + to + ")";
+
                 if (game.game().isInCheckmate(opponentColor)) {
-                    notif = new NotificationMessage("Checkmate! %s wins!".formatted(auth.username()));
+                    notif = new NotificationMessage("Checkmate! %s wins!%s".formatted(auth.username(), coordText));
                     game.game().setGameOver(true);
                 } else if (game.game().isInStalemate(opponentColor)) {
-                    notif = new NotificationMessage("Stalemate caused by %s. It's a tie!".formatted(auth.username()));
+                    notif = new NotificationMessage(
+                            "Stalemate caused by %s. It's a tie!%s".formatted(auth.username(),
+                                    coordText)
+                    );
                     game.game().setGameOver(true);
                 } else if (game.game().isInCheck(opponentColor)) {
                     notif = new NotificationMessage(
-                            "A move has been made by %s, %s is now in check!".formatted(auth.username(),
-                                    opponentColor.toString())
+                            "A move has been made by %s, %s is now in check!%s".formatted(auth.username(),
+                                    opponentColor.toString(), coordText)
                     );
                 } else {
-                    notif = new NotificationMessage("A move has been made by %s".formatted(auth.username()));
+                    notif = new NotificationMessage("A move has been made by %s%s".formatted(auth.username(),
+                            coordText)
+                    );
                 }
                 broadcastMessage(ctx, notif);
 
@@ -332,5 +343,11 @@ public class WebsocketHandler {
         } else {
             return null;
         }
+    }
+
+    private String posToString(int row, int col) {
+        char file = (char) ('a' + (col - 1));
+        char rank = (char) ('0' + row);
+        return "" + file + rank;
     }
 }
