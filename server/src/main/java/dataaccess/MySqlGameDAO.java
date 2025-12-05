@@ -58,7 +58,7 @@ public class MySqlGameDAO implements GameDAO {
     public void createGame(GameData game) throws DataAccessException {
         try {
             String statement = "INSERT INTO game (gameId, whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ? ,?)";
-            String gameJson = new Gson().toJson(game);
+            String gameJson = new Gson().toJson(game.game());
             executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), gameJson);
         } catch (DataAccessException e) {
             throw new DataAccessException(String.format("Error creating game: %s", e.getMessage()));
@@ -102,7 +102,7 @@ public class MySqlGameDAO implements GameDAO {
     @Override
     public void updateGame(GameData game) throws NotFoundException, DataAccessException {
         String statement = "UPDATE game SET whiteUsername=?, blackUsername=?, gameName=?, chessGame=? WHERE gameId=?";
-        String gameJson = new Gson().toJson(game);
+        String gameJson = new Gson().toJson(game.game());
         int updated = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), gameJson, game.gameID());
         if (updated == 0) {
             throw new NotFoundException(String.format("Game not found: %s", game.gameID()));
