@@ -122,6 +122,13 @@ public class PostloginRepl {
 
         if (server.joinGame(selected.gameID(), input[2].toUpperCase())) {
             out.println("You have joined the game.");
+
+            if (!server.connectWebsocket()) {
+                out.println("Unable to start without websocket connection.");
+                inGame = false;
+                return;
+            }
+
             inGame = true;
             server.connectWebsocket();
             server.joinPlayer(selected.gameID(), color);
