@@ -46,9 +46,18 @@ public class GameplayRepl {
                     server.leave(gameId);
                     break;
                 case "move":
-                    handleMove(input);
+                    if (color == null) {
+                        out.println("Observers can't make moves.");
+                    } else {
+                        handleMove(input);
+                    }
                     break;
                 case "resign":
+                    if (color == null) {
+                        out.println("Observers can't resign.");
+                        break;
+                    }
+
                     out.println("Are you sure you want to resign? (y/n)");
                     String[] confirmation = getUserInput();
                     if (confirmation.length == 1 && confirmation[0].equalsIgnoreCase("y")) {
